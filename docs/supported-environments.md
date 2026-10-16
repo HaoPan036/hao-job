@@ -10,7 +10,8 @@
 | 搜索与官网核验 | 宿主搜索与浏览；可选 Radar collector 联网采集，helper 离线处理已核验记录 | 真实来源与宿主工具逐项验收，解析器 fixture 不证明网站当前可用 |
 | 网页填写与提交 | 执行规则已抽取，依赖浏览器控制和独立 Agent | 本地模拟与真实网站兼容分开；新用户账号、真实 ATS 未逐站验收 |
 | 可选 changedetection 与 macOS 安装器 | 来源变化桥接、失败重试、显式后台安装 | 仅 mock API/服务调用与离线配置检查；第三方服务版本、API、安装和长期运行未验收 |
-| CLI、IDE、其他系统 | 可能使用文件与 Skill 能力 | 项目路线未验收；官方内置浏览器不在 CLI/IDE 中提供 |
+| Claude Code | 仓库内 `.claude/skills/` 链接到同一份 Skill，`CLAUDE.md` 引入 `AGENTS.md`；可用[安装器](../tools/skill-install/README.md)装到用户目录 | 文字流程在 Linux 上检查，见[下文](#claude-code-检查)；网页填写、独立审查提交和 macOS 实机未验证 |
+| 其他 CLI、IDE、其他系统 | 可能使用文件与 Skill 能力 | 项目路线未验收；官方内置浏览器不在 CLI/IDE 中提供 |
 
 此前私人岗位流程主要用于中国与新加坡。公开工具把地区、实习类型、路径和台账表头改为配置，用新加坡实习和加拿大全职虚构资料测试；这不证明各地网站兼容或用户具备工作许可。中文和英文材料已有流程，语言不能与岗位地区混为一谈。
 
@@ -26,6 +27,17 @@
 这是已安装软件、已有宿主账号下的维护者与 Agent 检查，未覆盖软件首次安装、全新账号、陌生用户或其他操作系统。仓库检查通过也不代表简历事实正确。
 
 同日，另在提交 `163a7c8` 的干净克隆中检查资料导入：在克隆外创建一份虚构 Markdown，用本地复制命令放入 `private/project-notes.md`，确认原件与副本字节一致；独立 Agent 仅读取项目内副本，正确读出项目内容和核对短语。该文件命中 Git 忽略规则，`git ls-files -- private/` 与 `git status --short --untracked-files=all` 均无输出。此检查证明当前宿主下“复制进项目后读取”的路线可用，没有验证新账号或项目外目录授权。
+
+## Claude Code 检查
+
+2026-10-16，在本分支的全新本地克隆中，用 Claude Code 2.1.301（Linux 容器、无交互的 `claude -p`，只允许读取类工具）检查：
+
+- 不加 `.claude/skills/` 时，Claude Code 的技能列表里没有 `hao-job-workspace`；加上指向 `.agents/skills/hao-job-workspace` 的相对符号链接后出现。
+- 发送中文 README 第 4 步请求：Claude Code 先调用该 Skill，再经链接读取 `references/evidence.md`、`resume.md`、`interview.md` 和虚构资料，交付中英文简历条目、面试介绍和出处表；没有写入“实现了重试”“性能提升 30%”或 Kubernetes 经验。运行后 `git status --short` 无输出。README 顶部演示图是这次输出的节选。
+- 发送英文 README 第 4 步请求：同样调用 Skill，面试稿按要求为英文，未改文件；但说明文字和出处表用了中文，出处表里的 ID 是它临时编的（它自己注明了）。这两点留给试用反馈再决定是否改 Skill。
+- 用 `tools/skill-install/install.py` 装到用户目录后，在仓库外的空目录启动 Claude Code 也能看到该 Skill；随后 `--uninstall` 只移除自己创建的链接。
+
+这是维护者在 Linux 容器里的检查，不是陌生用户验收；macOS 实机、Windows（符号链接需开发者模式或 `core.symlinks`）以及 Claude Code 中的网页填写与独立审查提交都未验证。
 
 ## 本轮流程迁移检查
 

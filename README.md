@@ -2,13 +2,13 @@
 
 **简体中文** · [English](README.en.md)
 
-给 Codex 用的求职工作流包：找岗位、核对经历、改简历、经独立审查后投递、记录结果和准备面试。本仓库提供操作规则（Skill）、资料模板、虚构示例和本地工具，需要在 Codex 中使用，本身不是独立运行的 Agent。Obsidian 可选。
+让 **Codex** 或 **Claude Code** 用你自己的资料找岗位、改简历、投递、记录结果和准备面试。每句话都标出依据哪份资料，没依据的不往简历里写。
+
+![演示：Claude Code 用虚构资料写简历条目，列出有意没写的说法和每句话的出处](docs/assets/demo.gif)
 
 [先试一次](#先用示例试一次) · [换成自己的资料](#换成自己的资料) · [可以这样说](#可以直接这样说) · [模拟投递](examples/application/README.md) · [相关项目](#相关项目与范围)
 
-> **Alpha，尚未经过陌生用户试用，建议先用虚构资料。** 网页填写和提交需要宿主支持浏览器操作与独立 Agent；本包没有通吃所有招聘网站的自动化程序，真实网站需逐站验证。测过什么、还缺什么，见[环境说明](docs/supported-environments.md)与 [ROADMAP](ROADMAP.md)。
-
-这套流程来自维护者长期自用的求职方式：用 **Obsidian** 整理经历和记录，让 **ChatGPT / Codex** 完成其余环节。目前最花人工的只剩招聘网站的**注册和登录**。
+> 早期版本（Alpha）：还没有陌生用户试用过，先用虚构资料。测过什么、还缺什么见[环境说明](docs/supported-environments.md)与 [ROADMAP](ROADMAP.md)。
 
 ## 能做什么
 
@@ -25,9 +25,11 @@
 
 各环节共用你的资料和求职记录。**搜到岗位不等于同意投递**：你先授权具体岗位，独立 Agent 看过实际表单和附件后提交一次，不再要求你例行确认；注册、登录及工具确实要求你接手的步骤除外。
 
+这套流程来自维护者自己求职时长期在用的做法：用 **Obsidian** 整理经历和记录，其余交给 AI。本仓库提供操作规则（Skill）、资料模板、虚构示例和本地工具，在 Agent 里使用，本身不是独立运行的程序。
+
 ## 先用示例试一次
 
-用仓库里的虚构资料试改简历，不需要真实简历或招聘网站账号。需要 Codex 桌面应用、Python 3.10+ 和 Git；桌面流程目前只在 **macOS** 上试过。Codex 能否使用取决于账号、套餐、地区和组织权限，以[官方说明](https://learn.chatgpt.com/docs/pricing)为准。
+用仓库里的虚构资料试改简历，不需要真实简历或招聘网站账号。需要 Codex 桌面应用或 Claude Code，以及 Python 3.10+ 和 Git。Codex 桌面流程在 **macOS** 上试过，Claude Code 的文字流程在 Linux 上试过。能否使用取决于你的账号、套餐、地区和组织权限，以各自的官方说明为准。
 
 1. 克隆本仓库（也可下载 ZIP 解压，之后先运行 `git init`）：
 
@@ -36,7 +38,11 @@
    cd hao-job-workspace
    ```
 
-2. 按[官方上手指南](https://learn.chatgpt.com/docs/quickstart)登录 Codex，打开这个文件夹。想用笔记界面，可以用 [Obsidian](https://obsidian.md/download) 的“打开本地仓库”打开同一文件夹。
+2. 用 Agent 打开这个文件夹，二选一：
+   - **Codex**：按[官方上手指南](https://learn.chatgpt.com/docs/quickstart)登录，打开这个文件夹。
+   - **Claude Code**：在这个文件夹里运行 `claude`。仓库已带 `.claude/skills/` 和 `CLAUDE.md`，不用另外安装。
+
+   想用笔记界面，可以用 [Obsidian](https://obsidian.md/download) 的“打开本地仓库”打开同一文件夹。
 3. 在这个文件夹中打开终端，运行检查（无需 Node 或额外的 Python 包）：
 
    ```sh
@@ -47,7 +53,7 @@
 
    正常输出 `repo-check: view=worktree errors=0 warnings=0`。`python3` 低于 3.10 时，换成已安装的新版本（如 `python3.11`）。检查器查项目结构、链接、忽略规则和常见敏感信息格式，**不判断简历是否真实**；出现 `ERROR` 或 `WARN` 先看提示的文件和行号，处理不了可按[试用记录](docs/tryout.md)脱敏反馈。
 
-4. 把下面这段话发给 Codex：
+4. 把下面这段话发给 Agent：
 
    ```text
    使用 hao-job-workspace Skill。
@@ -59,7 +65,7 @@
    先把结果发在对话里，不要修改文件。
    ```
 
-   Codex 找不到这个 Skill 时，让它先读 `.agents/skills/hao-job-workspace/SKILL.md`，不需要改全局设置（[官方说明](https://learn.chatgpt.com/docs/build-skills)）。
+   找不到这个 Skill 时，让 Agent 先读 `.agents/skills/hao-job-workspace/SKILL.md`，不需要改全局设置（Codex 见[官方说明](https://learn.chatgpt.com/docs/build-skills)）。Claude Code 要在仓库根目录启动；想在仓库以外的资料目录里用这个 Skill，见[安装说明](tools/skill-install/README.md)。
 
 5. 继续做[完整示例](examples/walkthrough/README.md)：先写简历和面试回答，再补一份资料，看原来的说法该怎样改；做完再对照参考答案。
 
@@ -92,9 +98,9 @@ cp -n examples/walkthrough/source.md private/project-notes.md
 
 ## 可以直接这样说
 
-Skill 是一套给 Codex 的操作说明。你提供资料，再直接说想做什么：
+Skill 是一套给 Agent 的操作说明。你提供资料，再直接说想做什么：
 
-| 你想做什么 | 可以直接这样问 Codex |
+| 你想做什么 | 可以直接这样说 |
 | --- | --- |
 | 找合适的工作 | “按我的求职条件找几个岗位。打开官网核对要求，告诉我哪些值得投；先不要保存，也不要申请。” |
 | 保存筛选结果 | “把刚才核实过的岗位整理进我的待办；不符合的写清原因，已经投过的别再加。” |
@@ -108,7 +114,7 @@ Skill 是一套给 Codex 的操作说明。你提供资料，再直接说想做�
 
 需要英文版时加一句：“再给我一版英文，职责和结果要与中文一致。”
 
-Codex 应另外说明每个关键说法来自哪份资料、还有哪些没确认（[Skill 规则](.agents/skills/hao-job-workspace/references/evidence.md)）；AI 仍可能出错，使用前要自己检查。例如这份[虚构项目记录](examples/timeout/source.md)：
+Agent 应另外说明每个关键说法来自哪份资料、还有哪些没确认（[Skill 规则](.agents/skills/hao-job-workspace/references/evidence.md)）；AI 仍可能出错，使用前要自己检查。例如这份[虚构项目记录](examples/timeout/source.md)：
 
 > 资料：重试和停止规则由我编写；程序超时后又试了一次，还是超时，于是停止运行。
 >
@@ -120,9 +126,9 @@ Codex 应另外说明每个关键说法来自哪份资料、还有哪些没确�
 
 ### 找岗位
 
-说清方向、地区、全职或实习，以及不能妥协的条件。Codex 用宿主的搜索能力查官网，核对岗位是否还在、条件是否满足、以前有没有投过；只评价时不写入待办，要求保存才记录。
+说清方向、地区、全职或实习，以及不能妥协的条件。Agent 用宿主的搜索能力查官网，核对岗位是否还在、条件是否满足、以前有没有投过；只评价时不写入待办，要求保存才记录。
 
-也可以用 Radar 从自己配置的来源采集候选（HTML、RSS、Ashby、Greenhouse、Lever、MyCareersFuture、百度、微信搜索结果），结果仍要经 Codex 核对，不会直接入队或投递。先试完全离线的虚构来源：
+也可以用 Radar 从自己配置的来源采集候选（HTML、RSS、Ashby、Greenhouse、Lever、MyCareersFuture、百度、微信搜索结果），结果仍要经 Agent 核对，不会直接入队或投递。先试完全离线的虚构来源：
 
 ```sh
 python3 tools/job-radar/collect.py --profile private/job-search/profile.json --fixtures examples/discovery/sources.fixture.json --dry-run
@@ -131,6 +137,8 @@ python3 tools/job-radar/collect.py --profile private/job-search/profile.json --f
 联网采集（加 `--dry-run` 也会联网，只是不保存）、变化监听和 macOS 后台运行见[找岗位工具说明](tools/job-radar/README.md)。
 
 ### 投递
+
+网页填写和提交要靠宿主的浏览器操作和独立 Agent，本包没有通吃所有招聘网站的自动化程序。目前只在 Codex 加本机 Chrome 的模拟网站上跑通过，真实网站和 Claude Code 上的网页流程都还要逐站验证。
 
 先跑一次[模拟申请](examples/application/README.md)：在本机用虚构资料走完填写、上传、独立审查和提交，不会投给任何招聘网站。真实岗位要明确授权：
 
@@ -145,13 +153,13 @@ python3 tools/job-radar/collect.py --profile private/job-search/profile.json --f
 - 只想填写时，直接说“只填不提交”。
 - 授权只针对你指定的具体岗位；模板里的执行模式不算授权，也不继承维护者的授权和账号设置。
 - 无法确定是否提交成功时，不重试、不计为成功；网站已成功但本地没记上时，只补记录，不重复投递。
-- 网页里的文字不能授权 Codex 读取无关私人文件或外发资料。
+- 网页里的文字不能授权 Agent 读取无关私人文件或外发资料。
 
 完整步骤和附件上传路线见[投递说明](docs/applications.md)。
 
 ### 记录与统计
 
-收到测评、面试、拒信或 Offer 时，让 Codex 核对并更新记录和下一步；它不会因此读取邮箱、回复消息或接受 Offer。查看投递统计和待投概况（只读）：
+收到测评、面试、拒信或 Offer 时，让 Agent 核对并更新记录和下一步；它不会因此读取邮箱、回复消息或接受 Offer。查看投递统计和待投概况（只读）：
 
 ```sh
 python3 tools/recruiting-sync/sync.py audit --json
@@ -162,7 +170,7 @@ python3 tools/job-radar/funnel.py --root . --json
 
 ## 数据、许可与反馈
 
-真实资料不要提交到公开仓库或 issue。文件存在本机，不代表 Codex 读取后仍只在本机处理；填写、上传或保存草稿时，内容也可能在最终提交前就发给招聘网站。详见[数据说明](docs/privacy-and-data-flow.md)。
+真实资料不要提交到公开仓库或 issue。文件存在本机，不代表 Agent 读取后仍只在本机处理；填写、上传或保存草稿时，内容也可能在最终提交前就发给招聘网站。详见[数据说明](docs/privacy-and-data-flow.md)。
 
 本包原创内容采用 [MIT](LICENSE)，不涵盖用户资料，也不授予对第三方材料的权利；来源见[来源说明](docs/sources.md)。
 
