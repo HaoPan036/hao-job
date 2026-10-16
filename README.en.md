@@ -2,21 +2,21 @@
 
 [简体中文](README.md) · **English**
 
-A job-search workflow pack for Codex: find jobs, check your experience against your notes, edit resumes, apply after an independent review, track results, and prepare for interviews. This repository supplies the instructions (a *Skill*), templates, fictional examples, and local tools. Use it inside Codex; it does not run as a standalone agent. Obsidian is optional.
+Let **Codex** or **Claude Code** use your own materials to find jobs, edit resumes, apply, track results, and prepare for interviews. Every statement names the source it rests on; anything without support stays out of your resume.
 
-[Quick start](#quick-start) · [Use your own materials](#use-your-own-materials) · [What to ask](#what-to-ask-codex) · [Mock application](examples/application/README.md) · [Related projects](#related-projects)
+![Demo: Claude Code writes a resume bullet from fictional notes, lists the claims it deliberately left out, and cites a source for each statement](docs/assets/demo.gif)
 
-> **Alpha. Not yet tested by users unfamiliar with the project; start with the fictional examples.** Filling and submitting applications requires a host with browser control and independent agents. There is no automation that works on every recruiting website; real websites need separate validation. See the [environment notes](docs/supported-environments.md) and [roadmap](ROADMAP.md) for what has and has not been tested.
+[Quick start](#quick-start) · [Use your own materials](#use-your-own-materials) · [What to ask](#what-to-ask) · [Mock application](examples/application/README.md) · [Related projects](#related-projects)
 
-The workflow comes from one the maintainer has used for an extended period: organize materials and records in **Obsidian**, and let **ChatGPT / Codex** handle the rest. Website **registration and login** are now the main manual work.
+> Alpha: nobody outside the project has tried it yet, so start with the fictional examples. See the [environment notes](docs/supported-environments.md) and [roadmap](ROADMAP.md) for what has and has not been tested.
 
-Chinese remains the primary documentation language. The prompts below are in English, but most linked guides and templates are in Chinese; you can ask Codex to explain them. An English README does not mean other agent hosts have been tested.
+Chinese remains the primary documentation language. The prompts below are in English, but most linked guides and templates are in Chinese; you can ask the agent to explain them. The demo above is in Chinese.
 
 ## What you can do
 
 Use one part of the workflow, or work through it from job search to interview preparation.
 
-| Step | What Codex helps with | Included in this package |
+| Step | What the agent helps with | Included in this package |
 | --- | --- | --- |
 | **Find jobs** | Search against your preferences, check official requirements, and identify duplicates | Workflow instructions, optional source collection, seen-job state, reports, and queue checks |
 | Edit resumes | Adapt existing experience to a job description; prepare bilingual wording, cover letters, and form answers | Material reuse rules and fillable templates |
@@ -27,9 +27,11 @@ Use one part of the workflow, or work through it from job search to interview pr
 
 The steps share your materials and application records. **Finding a job does not authorize applying to it**: you authorize a specific position, then an independent agent checks the actual form and attachments before submitting once, with no extra routine confirmation. Registration, login, and any step the actual tools hand back to you still need your input.
 
+The workflow comes from the one the maintainer has used throughout their own job search: organize materials and records in **Obsidian**, and let AI handle the rest. This repository supplies the instructions (a *Skill*), templates, fictional examples, and local tools. It runs inside an agent, not as a standalone program.
+
 ## Quick start
 
-Try the fictional materials first; you do not need a real resume or a recruiting website account. You need a desktop app with Codex access, Python 3.10+, and Git. The desktop workflow has only been tried on **macOS**. Codex access depends on your account, plan, region, and organization; check the [official information](https://learn.chatgpt.com/docs/pricing).
+Try the fictional materials first; you do not need a real resume or a recruiting website account. You need the Codex desktop app or Claude Code, plus Python 3.10+ and Git. The Codex desktop workflow has been tried on **macOS**, and the Claude Code text workflow on Linux. Access depends on your account, plan, region, and organization; check each product's official information.
 
 1. Clone the repository (or download and extract the ZIP, then run `git init` in it):
 
@@ -38,7 +40,11 @@ Try the fictional materials first; you do not need a real resume or a recruiting
    cd hao-job-workspace
    ```
 
-2. Follow the [official setup guide](https://learn.chatgpt.com/docs/quickstart) to sign in and open this folder in Codex. For a notes interface, open the same folder in [Obsidian](https://obsidian.md/download) with **Open folder as vault**.
+2. Open this folder in an agent, either:
+   - **Codex**: follow the [official setup guide](https://learn.chatgpt.com/docs/quickstart) to sign in, then open this folder.
+   - **Claude Code**: run `claude` in this folder. The repository already includes `.claude/skills/` and `CLAUDE.md`; nothing else to install.
+
+   For a notes interface, open the same folder in [Obsidian](https://obsidian.md/download) with **Open folder as vault**.
 3. Open a terminal in the folder and run the checks (no Node, npm, or extra Python packages needed):
 
    ```sh
@@ -49,7 +55,7 @@ Try the fictional materials first; you do not need a real resume or a recruiting
 
    Expected output: `repo-check: view=worktree errors=0 warnings=0`. If `python3` is older than 3.10, use your newer interpreter instead, such as `python3.11`. The checker covers repository structure, links, ignore rules, and common sensitive-data patterns; **it does not check whether your resume is truthful.** If it reports `ERROR` or `WARN`, inspect the named file and line, or report a redacted issue using the [tryout template](docs/tryout.md).
 
-4. Send this request to Codex:
+4. Send this request to the agent:
 
    ```text
    Use the hao-job-workspace Skill.
@@ -62,7 +68,7 @@ Try the fictional materials first; you do not need a real resume or a recruiting
    Reply in this conversation; do not modify any files.
    ```
 
-   If Codex cannot find the Skill, ask it to read `.agents/skills/hao-job-workspace/SKILL.md` first; no global settings need to change. See the [official Skill guide](https://learn.chatgpt.com/docs/build-skills).
+   If the agent cannot find the Skill, ask it to read `.agents/skills/hao-job-workspace/SKILL.md` first; no global settings need to change (for Codex, see the [official Skill guide](https://learn.chatgpt.com/docs/build-skills)). Start Claude Code from the repository root. To use the Skill from a materials folder outside this repository, see the [install notes](tools/skill-install/README.md) (in Chinese).
 
 5. Continue with the [full fictional exercise](examples/walkthrough/README.md): write a resume bullet and an interview answer, then revise both after new evidence arrives. Try it before reading the reference answers.
 
@@ -93,9 +99,9 @@ If you cannot read it, explain why. Do not guess or modify the file.
 
 When reading works, list your files in `private/material-index.md`. Paths are relative to `private/`, for example `project-notes.md`; use `outputs/` for generated materials. Listing a file does not verify its contents. The Singapore / Canada record categories are examples; adapt them to your circumstances. PDF and Word reading and layout have not been validated, and reading folders outside the project depends on host permissions; see the [environment notes](docs/supported-environments.md#资料格式).
 
-## What to ask Codex
+## What to ask
 
-The Skill is a set of instructions for Codex. Give it your materials and ask for the outcome you need.
+The Skill is a set of instructions for the agent. Give it your materials and ask for the outcome you need.
 
 | What you want | Example request |
 | --- | --- |
@@ -111,7 +117,7 @@ The Skill is a set of instructions for Codex. Give it your materials and ask for
 
 For bilingual materials, add: “Give me Chinese and English versions that describe the same responsibilities and results.”
 
-Codex should separately identify the source for each important statement and list anything still unconfirmed ([evidence rules](.agents/skills/hao-job-workspace/references/evidence.md)). These rules guide the agent; check the output yourself. For example, from this [fictional project record](examples/timeout/source.md):
+The agent should separately identify the source for each important statement and list anything still unconfirmed ([evidence rules](.agents/skills/hao-job-workspace/references/evidence.md)). These rules guide the agent; check the output yourself. For example, from this [fictional project record](examples/timeout/source.md):
 
 > Record: I wrote the retry and stop rules. The program timed out, retried once, timed out again, and stopped.
 >
@@ -123,9 +129,9 @@ Codex should separately identify the source for each important statement and lis
 
 ### Find jobs
 
-Tell Codex the roles, locations, full-time or internship, and which conditions are essential. It uses the host's search tools to check official listings, requirements, and your previous applications. An evaluation-only request does not change your queue; results are saved only when you ask.
+Tell the agent the roles, locations, full-time or internship, and which conditions are essential. It uses the host's search tools to check official listings, requirements, and your previous applications. An evaluation-only request does not change your queue; results are saved only when you ask.
 
-The optional Radar collector can fetch candidates from sources you configure (HTML, RSS, Ashby, Greenhouse, Lever, MyCareersFuture, Baidu, and WeChat search results). Codex must still verify each one; collection never queues or applies on its own. Try the fictional sources entirely offline:
+The optional Radar collector can fetch candidates from sources you configure (HTML, RSS, Ashby, Greenhouse, Lever, MyCareersFuture, Baidu, and WeChat search results). The agent must still verify each one; collection never queues or applies on its own. Try the fictional sources entirely offline:
 
 ```sh
 python3 tools/job-radar/collect.py --profile private/job-search/profile.json --fixtures examples/discovery/sources.fixture.json --dry-run
@@ -134,6 +140,8 @@ python3 tools/job-radar/collect.py --profile private/job-search/profile.json --f
 For live collection (`--dry-run` still makes network requests; it only skips saving), change monitoring, and macOS background operation, see the [discovery guide](tools/job-radar/README.md).
 
 ### Apply
+
+Filling and submitting applications relies on the host's browser control and independent agents; there is no automation that works on every recruiting website. The full chain has only run on a local mock website with Codex and Chrome. Real websites, and the browser workflow in Claude Code, still need site-by-site validation.
 
 Start with the [mock application](examples/application/README.md): fill, upload, independently review, and submit with fictional data on a local website. **It does not apply to a real employer.** For a real application, authorize the exact position:
 
@@ -158,7 +166,7 @@ The full procedure and upload routes are in the [application guide](docs/applica
 
 ### Track results
 
-When you receive an assessment, interview invitation, rejection, or offer, ask Codex to verify it and update the same records and next actions. This does not authorize reading your inbox, replying, or accepting an offer. To inspect application counts and queue health (read-only):
+When you receive an assessment, interview invitation, rejection, or offer, ask the agent to verify it and update the same records and next actions. This does not authorize reading your inbox, replying, or accepting an offer. To inspect application counts and queue health (read-only):
 
 ```sh
 python3 tools/recruiting-sync/sync.py audit --json
@@ -169,7 +177,7 @@ Resolve any `issues` before treating counts as complete. Field meanings are in t
 
 ## Data, license, and feedback
 
-**Do not commit real resumes, records, or other private materials to the public repository or include them in issues.** Files stored locally do not stay local once Codex reads them, and filling, uploading, or saving a draft may send data to the recruiting website before final submission. See the [data-flow notes](docs/privacy-and-data-flow.md).
+**Do not commit real resumes, records, or other private materials to the public repository or include them in issues.** Files stored locally do not stay local once the agent reads them, and filling, uploading, or saving a draft may send data to the recruiting website before final submission. See the [data-flow notes](docs/privacy-and-data-flow.md).
 
 Original content is available under the [MIT License](LICENSE). It does not cover your private materials or grant rights to third-party content. See the [sources](docs/sources.md).
 

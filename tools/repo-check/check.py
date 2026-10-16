@@ -15,6 +15,8 @@ import tempfile
 
 
 PRIVATE_EXAMPLES: set[str] = set()
+# Images ship as documentation screenshots; their names are still checked.
+IMAGE_SUFFIXES = {".gif", ".png", ".jpg", ".jpeg", ".webp"}
 IGNORE_PROBES = (
     "private/repo-check-probe.txt", "nested/private/probe.txt",
     "private/README.md", "nested/private/README.md",
@@ -23,6 +25,7 @@ IGNORE_PROBES = (
     "nested/.obsidian/workspace.json", ".env", "nested/.env.local",
     "nested/account-credentials.json", "nested/browser-cookies.json",
     "nested/service-api-key", "nested/service-secret.txt",
+    ".claude/settings.local.json", "nested/.claude/settings.local.json",
 )
 
 
@@ -62,7 +65,34 @@ class Checker:
             if others.returncode:
                 raise CheckFailure("Cannot list working-tree paths")
             self.paths.update(os.fsdecode(p) for p in others.stdout.split(b"\0") if p)
+        self.links_to: dict[str, str] = {}
+        for path in sorted(self.paths):
+            target = self.link_target(path)
+            if target is not None:
+                self.links_to[path] = target
+        if not staged:
             self.paths = {p for p in self.paths if self.safe_exists(p)}
+
+    def link_target(self, path: str) -> str | None:
+        if self.staged:
+            mode, oid = self.index[path]
+            if mode != "120000":
+                return None
+            result = git(self.root, "cat-file", "blob", oid)
+            return None if result.returncode else os.fsdecode(result.stdout)
+        candidate = self.root / path
+        return os.readlink(candidate) if candidate.is_symlink() else None
+
+    def symlinks(self) -> None:
+        # A shipped symlink must stay relative and point at a shipped directory or file.
+        for path, target in sorted(self.links_to.items()):
+            resolved = posixpath.normpath(posixpath.join(str(PurePosixPath(path).parent), target))
+            if target.startswith("/") or resolved == ".." or resolved.startswith("../"):
+                self.add("error", path, 0, "symlink-outside-package")
+            elif "private" in PurePosixPath(resolved).parts:
+                self.add("error", path, 0, "symlink-into-private")
+            elif not (resolved in self.paths or any(p.startswith(resolved + "/") for p in self.paths)):
+                self.add("error", path, 0, "symlink-target-missing")
 
     def add(self, severity: str, path: str, line: int, category: str) -> None:
         item = (severity, path, line, category)
@@ -89,6 +119,8 @@ class Checker:
             if not entry:
                 return None
             mode, oid = entry
+            if mode == "120000":
+                return None  # Checked by symlinks(); never follow the link.
             if mode not in {"100644", "100755"}:
                 self.add("warn", path, 0, "non-regular-file-not-read")
                 return None
@@ -250,7 +282,8 @@ class Checker:
             if data is None:
                 continue
             if b"\0" in data:
-                self.add("warn", path, 0, "binary-content-not-scanned")
+                if PurePosixPath(path).suffix.lower() not in IMAGE_SUFFIXES:
+                    self.add("warn", path, 0, "binary-content-not-scanned")
                 continue
             try:
                 content = data.decode("utf-8")
@@ -275,6 +308,7 @@ class Checker:
                 self.metadata(path, text)
             self.links(path, text)
         self.ignore_rules()
+        self.symlinks()
         self.privacy()
         diff_args = ["diff", "--no-ext-diff", "--check"]
         if self.staged:

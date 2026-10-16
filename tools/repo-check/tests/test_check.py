@@ -95,6 +95,47 @@ class PackageChecks(unittest.TestCase):
         self.put(".gitignore", "/private/\n")
         self.assertIn("privacy-ignore-missing:nested/private/probe.txt", self.findings())
 
+    def link(self, relative, target):
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.symlink_to(target)
+
+    def test_package_symlink_is_accepted_in_both_views(self):
+        self.put("skills/demo/SKILL.md", "---\nname: demo\ndescription: Fictional skill\n---\n")
+        self.link(".claude/skills/demo", "../../skills/demo")
+        self.git("add", "skills", ".claude")
+        self.assertEqual(self.findings(), set())
+        check = checker.Checker(self.root, True)
+        check.run()
+        self.assertEqual([f for f in check.findings if f[1] == ".claude/skills/demo"], [])
+
+    def test_symlink_leaving_package_is_rejected(self):
+        for name, target in [("up", "../../outside"), ("absolute", "/etc")]:
+            with self.subTest(name=name):
+                self.link("links/" + name, target)
+                self.git("add", "links/" + name)
+                self.assertIn("symlink-outside-package", self.findings(True))
+                self.assertIn("symlink-outside-package", self.findings(False))
+
+    def test_symlink_into_private_or_missing_target_is_rejected(self):
+        self.link("links/private", "../private")
+        self.link("links/missing", "../absent")
+        self.git("add", "-f", "links")
+        self.assertIn("symlink-into-private", self.findings(True))
+        self.assertIn("symlink-target-missing", self.findings(True))
+
+    def test_claude_local_settings_are_ignored(self):
+        self.git("check-ignore", "--no-index", ".claude/settings.local.json")
+
+    def test_images_are_not_reported_as_unscanned_binaries(self):
+        (self.root / "docs").mkdir()
+        (self.root / "docs/demo.gif").write_bytes(b"GIF89a\0\0fictional")
+        (self.root / "docs/blob.bin").write_bytes(b"\0\0fictional")
+        check = checker.Checker(self.root)
+        check.run()
+        warned = {f[1] for f in check.findings if f[3] == "binary-content-not-scanned"}
+        self.assertEqual(warned, {"docs/blob.bin"})
+
 
 if __name__ == "__main__":
     unittest.main()
