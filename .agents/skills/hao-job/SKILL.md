@@ -1,11 +1,11 @@
 ---
-name: hao-job-workspace
+name: hao-job
 description: "Find and evaluate jobs, prepare evidence-backed resumes, cover letters, form answers and interview materials, fill an explicitly authorized job application, arrange independent review and submission, and reconcile proven results with local records and archived materials. Also use for daily recruiting priorities, assessments, interviews, rejections, offers, claim verification and interview practice. Not for general knowledge-base maintenance or unrequested applications."
 ---
 
-# Hao Job Workspace
+# HaoJob
 
-用用户自己的资料找岗位、改简历、填写投递、记录结果、准备面试和练习技术题。行为规则都在本目录，不依赖维护者私人仓库的根规则。工具与模板在 hao-job-workspace 仓库；浏览器执行和独立审查还需要宿主提供相应能力，复制 Skill 不会提供这些工具。
+用用户自己的资料找岗位、改简历、填写投递、记录结果、准备面试和练习技术题。行为规则都在本目录，不依赖维护者私人仓库的根规则。工具与模板在 hao-job 仓库；浏览器执行和独立审查还需要宿主提供相应能力，复制 Skill 不会提供这些工具。
 
 ## 从当前请求开始
 
@@ -15,6 +15,7 @@ description: "Find and evaluate jobs, prepare evidence-backed resumes, cover let
 
 | 用户要什么 | 读取与交付 |
 |---|---|
+| 第一次使用、初始化、建立自己的资料（`/setup`） | [初始化](references/setup.md)：建空档案并确认 `private/` 被忽略，从资料、粘贴内容或问答整理档案和事实卡，列出待确认问题 |
 | 找岗位、核对申请条件、评价一个 JD | [找岗位](references/discovery.md)：核对官方来源、去重；按用户是否要求保存决定写回 |
 | 核对具体经历、数字、职责或实现 | [事实规则](references/evidence.md)：返回有依据的表述、来源和未解决项 |
 | 简历润色、求职信、申请问答、HR 开场白 | [申请材料](references/resume.md)：选择已有版本，按实际问题修改文字，另列事实引用与差异；不因此发送或填表 |

@@ -1,4 +1,4 @@
-# Hao Job Workspace
+# HaoJob
 
 [简体中文](README.md) · **English**
 
@@ -36,8 +36,8 @@ Try the fictional materials first; you do not need a real resume or a recruiting
 1. Clone the repository (or download and extract the ZIP, then run `git init` in it):
 
    ```sh
-   git clone https://github.com/HaoPan036/hao-job-workspace.git
-   cd hao-job-workspace
+   git clone https://github.com/HaoPan036/hao-job.git
+   cd hao-job
    ```
 
 2. Open this folder in an agent, either:
@@ -58,7 +58,7 @@ Try the fictional materials first; you do not need a real resume or a recruiting
 4. Send this request to the agent:
 
    ```text
-   Use the hao-job-workspace Skill.
+   Use the hao-job Skill.
    The project notes are in examples/walkthrough/source.md.
    The job description is in examples/walkthrough/target-role.md.
    Based on those materials, write one resume bullet in Chinese and English.
@@ -68,13 +68,17 @@ Try the fictional materials first; you do not need a real resume or a recruiting
    Reply in this conversation; do not modify any files.
    ```
 
-   If the agent cannot find the Skill, ask it to read `.agents/skills/hao-job-workspace/SKILL.md` first; no global settings need to change (for Codex, see the [official Skill guide](https://learn.chatgpt.com/docs/build-skills)). Start Claude Code from the repository root. To use the Skill from a materials folder outside this repository, see the [install notes](tools/skill-install/README.md) (in Chinese).
+   If the agent cannot find the Skill, ask it to read `.agents/skills/hao-job/SKILL.md` first; no global settings need to change (for Codex, see the [official Skill guide](https://learn.chatgpt.com/docs/build-skills)). Start Claude Code from the repository root. To use the Skill from a materials folder outside this repository, see the [install notes](tools/skill-install/README.md) (in Chinese).
 
 5. Continue with the [full fictional exercise](examples/walkthrough/README.md): write a resume bullet and an interview answer, then revise both after new evidence arrives. Try it before reading the reference answers.
 
-In Obsidian, you can enable the optional `hao-job-workspace` snippet under **Appearance → CSS snippets**. It organizes the file list; it does not protect private data.
+In Obsidian, you can enable the optional `hao-job` snippet under **Appearance → CSS snippets**. It organizes the file list; it does not protect private data.
 
 ## Use your own materials
+
+The quickest route: type `/setup` in Claude Code, optionally followed by a pasted resume, or first **copy** your resume and project notes into `private/inbox/`. In Codex, ask it to "set up my job-search materials". The agent creates the empty workspace, confirms `private/` stays out of Git, turns your materials into a profile and fact cards, and ends with a list of questions for you to confirm. Statements taken from a resume start as unverified; only what you confirm goes into final materials. See the [setup flow](.agents/skills/hao-job/references/setup.md) (in Chinese).
+
+To do it by hand instead, follow the steps below.
 
 After the example works, create a blank profile, search configuration, and application records. This copies only missing templates, never overwrites, and makes no network requests:
 
@@ -117,7 +121,7 @@ The Skill is a set of instructions for the agent. Give it your materials and ask
 
 For bilingual materials, add: “Give me Chinese and English versions that describe the same responsibilities and results.”
 
-The agent should separately identify the source for each important statement and list anything still unconfirmed ([evidence rules](.agents/skills/hao-job-workspace/references/evidence.md)). These rules guide the agent; check the output yourself. For example, from this [fictional project record](examples/timeout/source.md):
+The agent should separately identify the source for each important statement and list anything still unconfirmed ([evidence rules](.agents/skills/hao-job/references/evidence.md)). These rules guide the agent; check the output yourself. For example, from this [fictional project record](examples/timeout/source.md):
 
 > Record: I wrote the retry and stop rules. The program timed out, retried once, timed out again, and stopped.
 >
@@ -181,7 +185,7 @@ Resolve any `issues` before treating counts as complete. Field meanings are in t
 
 Original content is available under the [MIT License](LICENSE). It does not cover your private materials or grant rights to third-party content. See the [sources](docs/sources.md).
 
-After trying it, report through [GitHub Issues](https://github.com/HaoPan036/hao-job-workspace/issues/new) using the [tryout template](docs/tryout.md), without real resumes or full logs. Pending validation is listed in the [validation backlog](docs/validation-plan.md); optional scheduled web tasks and GitHub access are in the [experimental notes](docs/experimental/chatgpt-github.md).
+After trying it, report through [GitHub Issues](https://github.com/HaoPan036/hao-job/issues/new) using the [tryout template](docs/tryout.md), without real resumes or full logs. Pending validation is listed in the [validation backlog](docs/validation-plan.md); optional scheduled web tasks and GitHub access are in the [experimental notes](docs/experimental/chatgpt-github.md).
 
 ## Related projects
 

@@ -92,7 +92,7 @@ python3 tools/recruiting-sync/sync.py audit
 
 历史表按固定含义使用八列：确认日、实际投递日、公司、岗位、地区与性质、当前状态、官方链接、备注。工具不重排历史，不改已有申请的日期、状态或说明。
 
-测评、面试、拒绝与 Offer 等后续变化由 Agent 按 [运营规则](../../.agents/skills/hao-job-workspace/references/operations.md)更新准确行的状态与备注，并维护关联行动页；本工具不接收阶段事件，也不替用户作决定。保存后可用 `audit --json` 核对分类数量和格式，阶段含义及证据仍需 Agent 检查。
+测评、面试、拒绝与 Offer 等后续变化由 Agent 按 [运营规则](../../.agents/skills/hao-job/references/operations.md)更新准确行的状态与备注，并维护关联行动页；本工具不接收阶段事件，也不替用户作决定。保存后可用 `audit --json` 核对分类数量和格式，阶段含义及证据仍需 Agent 检查。
 
 待投条目沿用现有格式：
 
