@@ -34,8 +34,8 @@
 1. 克隆本仓库（也可下载 ZIP 解压，之后先运行 `git init`）：
 
    ```sh
-   git clone https://github.com/HaoPan036/haojob.git
-   cd haojob
+   git clone https://github.com/HaoPan036/hao-job.git
+   cd hao-job
    ```
 
 2. 用 Agent 打开这个文件夹，二选一：
@@ -56,7 +56,7 @@
 4. 把下面这段话发给 Agent：
 
    ```text
-   使用 haojob Skill。
+   使用 hao-job Skill。
    项目资料在 examples/walkthrough/source.md，
    岗位要求在 examples/walkthrough/target-role.md。
    请根据这些资料，帮我写一条可以放进简历的项目经历，再给一版英文。
@@ -65,15 +65,15 @@
    先把结果发在对话里，不要修改文件。
    ```
 
-   找不到这个 Skill 时，让 Agent 先读 `.agents/skills/haojob/SKILL.md`，不需要改全局设置（Codex 见[官方说明](https://learn.chatgpt.com/docs/build-skills)）。Claude Code 要在仓库根目录启动；想在仓库以外的资料目录里用这个 Skill，见[安装说明](tools/skill-install/README.md)。
+   找不到这个 Skill 时，让 Agent 先读 `.agents/skills/hao-job/SKILL.md`，不需要改全局设置（Codex 见[官方说明](https://learn.chatgpt.com/docs/build-skills)）。Claude Code 要在仓库根目录启动；想在仓库以外的资料目录里用这个 Skill，见[安装说明](tools/skill-install/README.md)。
 
 5. 继续做[完整示例](examples/walkthrough/README.md)：先写简历和面试回答，再补一份资料，看原来的说法该怎样改；做完再对照参考答案。
 
-在 Obsidian 的“外观 → CSS 代码片段”中可开启可选的 `haojob` 样式；它只整理文件列表，不保护敏感数据。
+在 Obsidian 的“外观 → CSS 代码片段”中可开启可选的 `hao-job` 样式；它只整理文件列表，不保护敏感数据。
 
 ## 换成自己的资料
 
-最省事的做法：在 Claude Code 里输入 `/setup`，后面可以直接贴一份简历，也可以先把简历、项目笔记**复制**到 `private/inbox/`；用 Codex 时说“帮我初始化求职资料”。Agent 会建好空档案、确认 `private/` 不会进 Git，把资料整理成档案和事实卡，最后列出需要你确认的问题。从简历里抽出的说法一律先记成未核实，你确认过的才能进正式材料。规则见 [初始化流程](.agents/skills/haojob/references/setup.md)。
+最省事的做法：在 Claude Code 里输入 `/setup`，后面可以直接贴一份简历，也可以先把简历、项目笔记**复制**到 `private/inbox/`；用 Codex 时说“帮我初始化求职资料”。Agent 会建好空档案、确认 `private/` 不会进 Git，把资料整理成档案和事实卡，最后列出需要你确认的问题。从简历里抽出的说法一律先记成未核实，你确认过的才能进正式材料。规则见 [初始化流程](.agents/skills/hao-job/references/setup.md)。
 
 想自己动手，按下面的步骤做。
 
@@ -118,7 +118,7 @@ Skill 是一套给 Agent 的操作说明。你提供资料，再直接说想做�
 
 需要英文版时加一句：“再给我一版英文，职责和结果要与中文一致。”
 
-Agent 应另外说明每个关键说法来自哪份资料、还有哪些没确认（[Skill 规则](.agents/skills/haojob/references/evidence.md)）；AI 仍可能出错，使用前要自己检查。例如这份[虚构项目记录](examples/timeout/source.md)：
+Agent 应另外说明每个关键说法来自哪份资料、还有哪些没确认（[Skill 规则](.agents/skills/hao-job/references/evidence.md)）；AI 仍可能出错，使用前要自己检查。例如这份[虚构项目记录](examples/timeout/source.md)：
 
 > 资料：重试和停止规则由我编写；程序超时后又试了一次，还是超时，于是停止运行。
 >
@@ -178,7 +178,7 @@ python3 tools/job-radar/funnel.py --root . --json
 
 本包原创内容采用 [MIT](LICENSE)，不涵盖用户资料，也不授予对第三方材料的权利；来源见[来源说明](docs/sources.md)。
 
-试用后请按[试用记录模板](docs/tryout.md)在 [Issues](https://github.com/HaoPan036/haojob/issues/new) 回报，不要附真实简历或完整日志。尚待验证的项目见[待验证清单](docs/validation-plan.md)；可选的网页定时任务与 GitHub 接入见[实验说明](docs/experimental/chatgpt-github.md)。
+试用后请按[试用记录模板](docs/tryout.md)在 [Issues](https://github.com/HaoPan036/hao-job/issues/new) 回报，不要附真实简历或完整日志。尚待验证的项目见[待验证清单](docs/validation-plan.md)；可选的网页定时任务与 GitHub 接入见[实验说明](docs/experimental/chatgpt-github.md)。
 
 ## 相关项目与范围
 

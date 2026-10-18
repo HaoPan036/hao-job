@@ -5,7 +5,7 @@
 - `collect.py`：显式前台采集、现有来源解析器、详情提取、SQLite 已见状态、来源健康和 Markdown 报告。结果使用同一份 `JobDossier`，核验为 `PENDING`，可行性、能力和战略为 `UNKNOWN`，建议为 `MANUAL_REVIEW`。
 - `radar.py`：保留离线 dossier 去重、严格队列门和同步审计；不联网，也不自行判断输入评估是否真实。
 
-完整发现步骤见 [discovery reference](../../.agents/skills/haojob/references/discovery.md)。候选事实和用户匹配由 Agent 核验；本脚本不能从 `VERIFIED` 字符串判断证据是否真实。
+完整发现步骤见 [discovery reference](../../.agents/skills/hao-job/references/discovery.md)。候选事实和用户匹配由 Agent 核验；本脚本不能从 `VERIFIED` 字符串判断证据是否真实。
 
 ## Foreground collection
 

@@ -3,7 +3,7 @@ description: 第一次使用：建空档案，把你的简历和经历整理进 
 argument-hint: "[资料路径，或直接贴一份简历；留空则从问答开始]"
 ---
 
-使用 haojob Skill，按 `.agents/skills/haojob/references/setup.md` 帮我完成初始化。
+使用 hao-job Skill，按 `.agents/skills/hao-job/references/setup.md` 帮我完成初始化。
 
 我这次提供的内容（可能为空）：
 

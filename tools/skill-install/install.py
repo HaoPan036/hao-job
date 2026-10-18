@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Link the haojob skill into each agent's user-level skill directory.
+"""Link the hao-job skill into each agent's user-level skill directory.
 
 Every target is a symlink back to this repository, so `git pull` updates all
 agents at once. Existing files that this installer did not create are never
@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-SKILL_NAME = "haojob"
+SKILL_NAME = "hao-job"
 SKILL_SOURCE = Path(__file__).resolve().parents[2] / ".agents" / "skills" / SKILL_NAME
 
 # (label, directory that must exist for the agent to count as installed,
