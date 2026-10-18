@@ -1,11 +1,11 @@
 ---
-name: hao-job-workspace
+name: haojob
 description: "Find and evaluate jobs, prepare evidence-backed resumes, cover letters, form answers and interview materials, fill an explicitly authorized job application, arrange independent review and submission, and reconcile proven results with local records and archived materials. Also use for daily recruiting priorities, assessments, interviews, rejections, offers, claim verification and interview practice. Not for general knowledge-base maintenance or unrequested applications."
 ---
 
-# Hao Job Workspace
+# HaoJob
 
-用用户自己的资料找岗位、改简历、填写投递、记录结果、准备面试和练习技术题。行为规则都在本目录，不依赖维护者私人仓库的根规则。工具与模板在 hao-job-workspace 仓库；浏览器执行和独立审查还需要宿主提供相应能力，复制 Skill 不会提供这些工具。
+用用户自己的资料找岗位、改简历、填写投递、记录结果、准备面试和练习技术题。行为规则都在本目录，不依赖维护者私人仓库的根规则。工具与模板在 haojob 仓库；浏览器执行和独立审查还需要宿主提供相应能力，复制 Skill 不会提供这些工具。
 
 ## 从当前请求开始
 

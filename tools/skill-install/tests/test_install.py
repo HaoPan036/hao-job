@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 PACKAGE = Path(__file__).resolve().parents[3]
-SKILL = PACKAGE / ".agents" / "skills" / "hao-job-workspace"
+SKILL = PACKAGE / ".agents" / "skills" / "haojob"
 INSTALLER = PACKAGE / "tools" / "skill-install" / "install.py"
 
 
@@ -25,7 +25,7 @@ class InstallerTest(unittest.TestCase):
     def test_install_links_every_detected_agent(self) -> None:
         self.assertEqual(self.installer().returncode, 0)
         for skills_dir in (".agents/skills", ".claude/skills"):
-            link = self.home / skills_dir / "hao-job-workspace"
+            link = self.home / skills_dir / "haojob"
             self.assertTrue(link.is_symlink())
             self.assertEqual(link.resolve(), SKILL.resolve())
             self.assertTrue((link / "SKILL.md").is_file())
@@ -45,10 +45,10 @@ class InstallerTest(unittest.TestCase):
         (self.home / ".claude").rmdir()
         self.installer()
         self.assertFalse((self.home / ".claude").exists())
-        self.assertTrue((self.home / ".agents" / "skills" / "hao-job-workspace").is_symlink())
+        self.assertTrue((self.home / ".agents" / "skills" / "haojob").is_symlink())
 
     def test_never_overwrites_existing_skill(self) -> None:
-        existing = self.home / ".claude" / "skills" / "hao-job-workspace"
+        existing = self.home / ".claude" / "skills" / "haojob"
         existing.mkdir(parents=True)
         result = self.installer()
         self.assertEqual(result.returncode, 1)
@@ -56,11 +56,11 @@ class InstallerTest(unittest.TestCase):
 
     def test_uninstall_removes_only_own_links(self) -> None:
         self.installer()
-        other = self.home / ".agents" / "skills" / "hao-job-workspace"
+        other = self.home / ".agents" / "skills" / "haojob"
         other.unlink()
         other.mkdir()
         self.installer("--uninstall")
-        self.assertFalse((self.home / ".claude" / "skills" / "hao-job-workspace").exists())
+        self.assertFalse((self.home / ".claude" / "skills" / "haojob").exists())
         self.assertTrue(other.is_dir())
 
 

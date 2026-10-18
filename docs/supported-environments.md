@@ -5,7 +5,7 @@
 | 组成 | 当前范围 | 验证边界 |
 | --- | --- | --- |
 | Obsidian + Codex 桌面 / macOS | 共享本地目录，Markdown 资料与中英文材料 | 已做下述干净克隆检查；首次安装、新账号与陌生用户尚未验收 |
-| hao-job-workspace Skill | 找岗位、事实核对、简历、具体岗位投递、记录、面试准备/复盘/陪练 | 文字流程有独立 Agent 演练；浏览器和网站覆盖单独记录，不等于陌生用户验收 |
+| haojob Skill | 找岗位、事实核对、简历、具体岗位投递、记录、面试准备/复盘/陪练 | 文字流程有独立 Agent 演练；浏览器和网站覆盖单独记录，不等于陌生用户验收 |
 | Python 与 Git | 初始化、资料读取、前台采集、去重与保存检查、同步计数、归档、仓库检查、虚构模拟网站 | 核心脚本 Python 3.10+、标准库；维护环境 3.11.14；Linux CI 与桌面流程分开记录 |
 | 搜索与官网核验 | 宿主搜索与浏览；可选 Radar collector 联网采集，helper 离线处理已核验记录 | 真实来源与宿主工具逐项验收，解析器 fixture 不证明网站当前可用 |
 | 网页填写与提交 | 执行规则已抽取，依赖浏览器控制和独立 Agent | 本地模拟与真实网站兼容分开；新用户账号、真实 ATS 未逐站验收 |
@@ -32,7 +32,7 @@
 
 2026-10-16，在本分支的全新本地克隆中，用 Claude Code 2.1.301（Linux 容器、无交互的 `claude -p`，只允许读取类工具）检查：
 
-- 不加 `.claude/skills/` 时，Claude Code 的技能列表里没有 `hao-job-workspace`；加上指向 `.agents/skills/hao-job-workspace` 的相对符号链接后出现。
+- 不加 `.claude/skills/` 时，Claude Code 的技能列表里没有 `haojob`；加上指向 `.agents/skills/haojob` 的相对符号链接后出现。
 - 发送中文 README 第 4 步请求：Claude Code 先调用该 Skill，再经链接读取 `references/evidence.md`、`resume.md`、`interview.md` 和虚构资料，交付中英文简历条目、面试介绍和出处表；没有写入“实现了重试”“性能提升 30%”或 Kubernetes 经验。运行后 `git status --short` 无输出。README 顶部演示图是这次输出的节选。
 - 发送英文 README 第 4 步请求：同样调用 Skill，面试稿按要求为英文，未改文件；但说明文字和出处表用了中文，出处表里的 ID 是它临时编的（它自己注明了）。这两点留给试用反馈再决定是否改 Skill。
 - 用 `tools/skill-install/install.py` 装到用户目录后，在仓库外的空目录启动 Claude Code 也能看到该 Skill；随后 `--uninstall` 只移除自己创建的链接。

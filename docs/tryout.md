@@ -2,7 +2,7 @@
 
 先邀请两三位没有参与开发的人，仅使用虚构资料完成简历与面试流程；收集并解决上手卡点后再扩大推广。反馈不要包含真实简历、联系方式或完整日志。
 
-复制下面的模板，填好后粘贴到本仓库的 [Issue](https://github.com/HaoPan036/hao-job-workspace/issues/new)。版本可用 `git rev-parse --short HEAD` 查看；使用 ZIP 时填写下载日期。账号只记录功能入口是否可见，不填写账号标识或套餐账单。
+复制下面的模板，填好后粘贴到本仓库的 [Issue](https://github.com/HaoPan036/haojob/issues/new)。版本可用 `git rev-parse --short HEAD` 查看；使用 ZIP 时填写下载日期。账号只记录功能入口是否可见，不填写账号标识或套餐账单。
 
 ```text
 日期：
