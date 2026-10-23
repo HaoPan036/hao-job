@@ -33,8 +33,8 @@
 2026-10-16，在本分支的全新本地克隆中，用 Claude Code 2.1.301（Linux 容器、无交互的 `claude -p`，只允许读取类工具）检查：
 
 - 不加 `.claude/skills/` 时，Claude Code 的技能列表里没有 `hao-job`；加上指向 `.agents/skills/hao-job` 的相对符号链接后出现。
-- 发送中文 README 第 4 步请求：Claude Code 先调用该 Skill，再经链接读取 `references/evidence.md`、`resume.md`、`interview.md` 和虚构资料，交付中英文简历条目、面试介绍和出处表；没有写入“实现了重试”“性能提升 30%”或 Kubernetes 经验。运行后 `git status --short` 无输出。README 顶部演示图是这次输出的节选。
-- 发送英文 README 第 4 步请求：同样调用 Skill，面试稿按要求为英文，未改文件；但说明文字和出处表用了中文，出处表里的 ID 是它临时编的（它自己注明了）。这两点留给试用反馈再决定是否改 Skill。
+- 发送中文 README 里的试用请求（当时在第 4 步）：Claude Code 先调用该 Skill，再经链接读取 `references/evidence.md`、`resume.md`、`interview.md` 和虚构资料，交付中英文简历条目、面试介绍和出处表；没有写入“实现了重试”“性能提升 30%”或 Kubernetes 经验。运行后 `git status --short` 无输出。README 顶部演示图是这次输出的节选。
+- 发送英文 README 里的试用请求（当时在第 4 步）：同样调用 Skill，面试稿按要求为英文，未改文件；但说明文字和出处表用了中文，出处表里的 ID 是它临时编的（它自己注明了）。这两点留给试用反馈再决定是否改 Skill。
 - 用 `tools/skill-install/install.py` 装到用户目录后，在仓库外的空目录启动 Claude Code 也能看到该 Skill；随后 `--uninstall` 只移除自己创建的链接。
 
 - `/setup`：在干净克隆里用 `claude -p "/setup <虚构简历>"` 运行，只放行读写文件、初始化脚本和 `git check-ignore`。它建好 17 个模板，把虚构简历拆成 7 张 `unverified` 事实卡（“响应时间降低 40%”“用户超过 2000”标为缺口径、不得进简历），没有推断工作许可和应届资格，最后列出 10 条待确认问题；所有写入都在 `private/`，`git status --short` 无输出。

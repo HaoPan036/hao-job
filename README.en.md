@@ -2,60 +2,44 @@
 
 [简体中文](README.md) · **English**
 
-Let **Codex** or **Claude Code** use your own materials to find jobs, edit resumes, apply, track results, and prepare for interviews. Every statement names the source it rests on; anything without support stays out of your resume.
+HaoJob lets **Codex** or **Claude Code** help with your job search: finding jobs, editing your resume, applying, tracking results, and preparing for interviews. It works only from your own materials, cites a source for every statement it writes, and keeps anything you haven't done out of your resume.
 
 ![Demo: Claude Code writes a resume bullet from fictional notes, lists the claims it deliberately left out, and cites a source for each statement](docs/assets/demo.gif)
 
-[Quick start](#quick-start) · [Use your own materials](#use-your-own-materials) · [What to ask](#what-to-ask) · [Mock application](examples/application/README.md) · [Related projects](#related-projects)
+> Alpha: nobody outside the project has tried it yet, so start with the fictional examples in this repository.
 
-> Alpha: nobody outside the project has tried it yet, so start with the fictional examples. See the [environment notes](docs/supported-environments.md) and [roadmap](ROADMAP.md) for what has and has not been tested.
+Chinese is the primary documentation language. The prompts below are in English, but most linked guides are in Chinese; you can ask the agent to explain them.
 
-Chinese remains the primary documentation language. The prompts below are in English, but most linked guides and templates are in Chinese; you can ask the agent to explain them. The demo above is in Chinese.
+## What it is
 
-## What you can do
+HaoJob is not an app you install. It is a job-search playbook written for the AI (called a *Skill*), plus blank templates and a few small tools. You tell Codex or Claude Code what you want in plain words, and the agent follows the playbook. It comes from the workflow the maintainer used throughout their own job search.
 
-Use one part of the workflow, or work through it from job search to interview preparation.
+Your resume, project notes, and application records stay in a `private/` folder on your computer, which is never committed to Git.
 
-| Step | What the agent helps with | Included in this package |
-| --- | --- | --- |
-| **Find jobs** | Search against your preferences, check official requirements, and identify duplicates | Workflow instructions, optional source collection, seen-job state, reports, and queue checks |
-| Edit resumes | Adapt existing experience to a job description; prepare bilingual wording, cover letters, and form answers | Material reuse rules and fillable templates |
-| Fill and submit applications | Fill an authorized application, upload approved files, and hand it to an independent agent for review and submission | Execution and review instructions, plus a local mock website; real websites need separate validation |
-| Track results | Record proven submissions, count applications, and keep the exact resume used | Synchronization, counting, and archive tools |
-| Follow up on progress | Verify assessments, interviews, rejections, and offers; organize next actions | Reuses existing records and action pages |
-| Prepare for interviews | Prepare project explanations, common technical questions, mock interviews, and feedback | Preparation, review, practice templates, and a complete fictional example |
+The workflow has four steps, and you can use any of them on its own:
 
-The steps share your materials and application records. **Finding a job does not authorize applying to it**: you authorize a specific position, then an independent agent checks the actual form and attachments before submitting once, with no extra routine confirmation. Registration, login, and any step the actual tools hand back to you still need your input.
+```text
+① Set up your materials → ② Find jobs that match your profile → ③ Apply once authorized → ④ Track, follow up, prepare for interviews
+```
 
-The workflow comes from the one the maintainer has used throughout their own job search: organize materials and records in **Obsidian**, and let AI handle the rest. This repository supplies the instructions (a *Skill*), templates, fictional examples, and local tools. It runs inside an agent, not as a standalone program.
+## Try it in 5 minutes
 
-## Quick start
+Start with the fictional materials in this repository. You don't need a real resume or a recruiting-site account.
 
-Try the fictional materials first; you do not need a real resume or a recruiting website account. You need the Codex desktop app or Claude Code, plus Python 3.10+ and Git. The Codex desktop workflow has been tried on **macOS**, and the Claude Code text workflow on Linux. Access depends on your account, plan, region, and organization; check each product's official information.
+You need: [Claude Code](https://code.claude.com/docs/en/setup) (runs in a terminal) or the Codex desktop app, plus Git and Python 3.10 or later. It has been tried on macOS and Linux, not yet on Windows.
 
-1. Clone the repository (or download and extract the ZIP, then run `git init` in it):
+1. Get the repository from a terminal:
 
    ```sh
    git clone https://github.com/HaoPan036/hao-job.git
    cd hao-job
    ```
 
-2. Open this folder in an agent, either:
-   - **Codex**: follow the [official setup guide](https://learn.chatgpt.com/docs/quickstart) to sign in, then open this folder.
-   - **Claude Code**: run `claude` in this folder. The repository already includes `.claude/skills/` and `CLAUDE.md`; nothing else to install.
+2. Open the folder with your agent:
+   - **Claude Code**: run `claude` in the same terminal.
+   - **Codex**: sign in following the [official setup guide](https://learn.chatgpt.com/docs/quickstart), then open this folder.
 
-   For a notes interface, open the same folder in [Obsidian](https://obsidian.md/download) with **Open folder as vault**.
-3. Open a terminal in the folder and run the checks (no Node, npm, or extra Python packages needed):
-
-   ```sh
-   python3 --version
-   git --version
-   python3 tools/repo-check/check.py
-   ```
-
-   Expected output: `repo-check: view=worktree errors=0 warnings=0`. If `python3` is older than 3.10, use your newer interpreter instead, such as `python3.11`. The checker covers repository structure, links, ignore rules, and common sensitive-data patterns; **it does not check whether your resume is truthful.** If it reports `ERROR` or `WARN`, inspect the named file and line, or report a redacted issue using the [tryout template](docs/tryout.md).
-
-4. Send this request to the agent:
+3. Send it this request:
 
    ```text
    Use the hao-job Skill.
@@ -68,140 +52,122 @@ Try the fictional materials first; you do not need a real resume or a recruiting
    Reply in this conversation; do not modify any files.
    ```
 
-   If the agent cannot find the Skill, ask it to read `.agents/skills/hao-job/SKILL.md` first; no global settings need to change (for Codex, see the [official Skill guide](https://learn.chatgpt.com/docs/build-skills)). Start Claude Code from the repository root. To use the Skill from a materials folder outside this repository, see the [install notes](tools/skill-install/README.md) (in Chinese).
+You'll get a resume bullet in both languages, an interview explanation, the source behind each statement, and the claims it deliberately left out. To keep practicing, try the [full fictional exercise](examples/walkthrough/README.md).
 
-5. Continue with the [full fictional exercise](examples/walkthrough/README.md): write a resume bullet and an interview answer, then revise both after new evidence arrives. Try it before reading the reference answers.
+If the agent says it can't find the Skill, ask it to read `.agents/skills/hao-job/SKILL.md` first. To use it from folders outside this repository, see the [install notes](tools/skill-install/README.md) (in Chinese).
 
-In Obsidian, you can enable the optional `hao-job` snippet under **Appearance → CSS snippets**. It organizes the file list; it does not protect private data.
+## The full workflow
 
-## Use your own materials
+### ① Set up your materials
 
-The quickest route: type `/setup` in Claude Code, optionally followed by a pasted resume, or first **copy** your resume and project notes into `private/inbox/`. In Codex, ask it to "set up my job-search materials". The agent creates the empty workspace, confirms `private/` stays out of Git, turns your materials into a profile and fact cards, and ends with a list of questions for you to confirm. Statements taken from a resume start as unverified; only what you confirm goes into final materials. See the [setup flow](.agents/skills/hao-job/references/setup.md) (in Chinese).
+**What you do:** in Claude Code, type `/setup`; in Codex, say "set up my job-search materials". It first creates `private/` and confirms it stays out of Git, then asks you to paste your resume or **copy** your resume and project notes into `private/inbox/`. Add real materials only after that check passes.
 
-To do it by hand instead, follow the steps below.
+**What the agent does:**
 
-After the example works, create a blank profile, search configuration, and application records. This copies only missing templates, never overwrites, and makes no network requests:
+1. Creates a blank workspace in `private/` and confirms the folder stays out of Git.
+2. Reads your materials and splits each experience into "fact cards", one claim per card, each naming the file it came from.
+3. Asks a few groups of questions: target roles, regions, work authorization in each region, graduation and start dates, and which parts of each project you did yourself. You can skip any of them.
+4. Writes your job-search preferences to `private/job-search/profile.json`. Step ② searches with these.
+5. Ends with a list of things for you to confirm.
 
-```sh
-python3 tools/workspace/setup.py init
-python3 tools/workspace/setup.py check
-git check-ignore -v private/material-index.md
-```
+**Where it gets stuck:**
 
-You should see `INIT_DONE created=17 kept=0`, then `SETUP_CHECK_PASS`, then an ignore rule containing `**/private/`. Blank profiles pass too; that does not verify your facts or authorize applications. If the last command prints nothing, follow the [setup guide](tools/workspace/README.md#确认-private-被忽略), and use only fictional materials until it passes.
+- **PDF and Word resumes may not be readable.** Markdown and plain text work best for now; if reading fails, save your resume as plain text and try again.
+- **Everything read from a resume starts as unverified.** Only claims you confirm one by one go into real resumes. Results with numbers stay unverified until you can say how they were measured.
+- **It won't guess your work authorization or graduation date.** Anything you don't state stays blank, and in step ② jobs that depend on it go to you for a decision.
+- If the check finds `private/` isn't ignored by Git, it stops and uses only fictional materials until that's fixed.
 
-Then **copy** the Markdown or plain-text files you need into `private/`, without moving or overwriting the originals. Try it first with a fictional file:
+To do it step by step yourself, see the [setup guide](tools/workspace/README.md) (in Chinese).
 
-```sh
-cp -n examples/walkthrough/source.md private/project-notes.md
-```
+### ② Find jobs that match your profile
 
-```text
-Read private/project-notes.md and explain what it describes in English.
-If you cannot read it, explain why. Do not guess or modify the file.
-```
+**What you do:** say "Find a few jobs that match my preferences. Check the official listings and tell me which are worth applying to. Don't save anything or apply yet."
 
-When reading works, list your files in `private/material-index.md`. Paths are relative to `private/`, for example `project-notes.md`; use `outputs/` for generated materials. Listing a file does not verify its contents. The Singapore / Canada record categories are examples; adapt them to your circumstances. PDF and Word reading and layout have not been validated, and reading folders outside the project depends on host permissions; see the [environment notes](docs/supported-environments.md#资料格式).
+**What the agent does:**
 
-## What to ask
+1. Reads the roles, regions, and conditions in `profile.json` and uses its own web search to find candidates.
+2. Checks each job on the company's career site or official applicant system: is it still open, what does it require, do your work authorization and dates fit.
+3. Compares against jobs you've applied to or already queued, and drops duplicates.
+4. Gives each job a recommendation (apply now, apply in a batch, needs your call, watch, or skip) with reasons and which resume to use.
+5. Only shows you the results by default. When you say "save", it adds the worthwhile ones to your queue in `private/recruiting/queue.md`.
 
-The Skill is a set of instructions for the agent. Give it your materials and ask for the outcome you need.
+**Optional: automatic collection.** To keep watching specific companies, list their career pages, RSS feeds, Greenhouse, Lever and similar addresses in `private/job-search/sources.json`, then use the [job radar](tools/job-radar/README.md) to collect candidates for the agent to check one by one. It never queues or applies on its own.
 
-| What you want | Example request |
-| --- | --- |
-| Find suitable jobs | “Find a few jobs that match my preferences. Open the official listings and tell me which are worth applying to. Don't save anything or apply yet.” |
-| Save the results | “Add the jobs we just checked to my application queue. Explain why the others don't fit, and don't add jobs I've already applied to.” |
-| Plan today's work | “Check my queue and confirmed deadlines. Tell me what to do first today; don't change my records yet.” |
-| Record an interview | “This role sent me an interview invitation. Here is the message. Verify it and update my records and next actions; don't reply for me.” |
-| Check for overstatements | “Compare my resume with my project notes. Flag anything that sounds overstated, and ask me about anything you can't confirm.” |
-| Tailor a resume | “Here are my resume and the job description. Improve the project section to emphasize relevant work, without adding things I haven't done.” |
-| Prepare a project explanation | “I'm interviewing for this role. Help me explain this project and prepare for likely follow-up questions.” |
-| Study technical questions | “What technical questions might come up for this role? Explain the topics I'm less familiar with, then quiz me.” |
-| Review and practice interviews | “Act as the interviewer and ask about my resume, one question at a time. After each answer, tell me what was unclear and how I could answer better.” |
+**Where it gets stuck:**
 
-For bilingual materials, add: “Give me Chinese and English versions that describe the same responsibilities and results.”
+- **An empty `profile.json` gives it nothing to search for.** Do step ① first, or just tell the agent your roles and regions.
+- **The agent needs web search.** Whether it can search, and how well, depends on your Codex or Claude Code account and settings.
+- **Aggregators, social posts, and old screenshots are only leads.** It has to open the official job page before recommending an application.
+- **Jobs with unclear conditions aren't let through automatically.** For example, if a posting doesn't mention visa sponsorship and you haven't stated your work authorization, it marks the job for your decision.
+- **The automatic sources list starts empty**, and you fill in the addresses. It can't handle pages that need a login or load content in the browser, and compatibility with real sites hasn't been checked site by site. Scheduled runs and change monitoring are experimental and have only been simulated on macOS; see the [background service notes](docs/experimental/background-service.md) (in Chinese).
 
-The agent should separately identify the source for each important statement and list anything still unconfirmed ([evidence rules](.agents/skills/hao-job/references/evidence.md)). These rules guide the agent; check the output yourself. For example, from this [fictional project record](examples/timeout/source.md):
+### ③ Apply once authorized
 
-> Record: I wrote the retry and stop rules. The program timed out, retried once, timed out again, and stopped.
->
-> AI draft: “Solved the performance problem.”
->
-> Revised against the record: “Added retry and stop rules; the program stopped after both attempts timed out.”
-
-## Find jobs, apply, and track results
-
-### Find jobs
-
-Tell the agent the roles, locations, full-time or internship, and which conditions are essential. It uses the host's search tools to check official listings, requirements, and your previous applications. An evaluation-only request does not change your queue; results are saved only when you ask.
-
-The optional Radar collector can fetch candidates from sources you configure (HTML, RSS, Ashby, Greenhouse, Lever, MyCareersFuture, Baidu, and WeChat search results). The agent must still verify each one; collection never queues or applies on its own. Try the fictional sources entirely offline:
-
-```sh
-python3 tools/job-radar/collect.py --profile private/job-search/profile.json --fixtures examples/discovery/sources.fixture.json --dry-run
-```
-
-For live collection (`--dry-run` still makes network requests; it only skips saving), change monitoring, and macOS background operation, see the [discovery guide](tools/job-radar/README.md).
-
-### Apply
-
-Filling and submitting applications relies on the host's browser control and independent agents; there is no automation that works on every recruiting website. The full chain has only run on a local mock website with Codex and Chrome. Real websites, and the browser workflow in Claude Code, still need site-by-site validation.
-
-Start with the [mock application](examples/application/README.md): fill, upload, independently review, and submit with fictional data on a local website. **It does not apply to a real employer.** For a real application, authorize the exact position:
+**What you do:** first run the [local mock application](examples/application/README.md): following its steps, you start a fake recruiting site on your computer and the agent fills, checks, and submits a fictional application. Nothing goes to a real site. This step needs an agent that can control a browser. For a real application, name the exact job:
 
 ```text
-I authorize applying to this specific position: [official URL and job ID].
-Use the materials I have specified and confirmed in private/,
-and this approved resume: [file path].
-After filling the form and uploading the resume, hand the actual page
-to an independent agent for review. If it passes, that agent should submit once.
-Then verify the result, update my records, archive the resume actually used,
-and report the application count.
-Pause if I need to register, log in, or provide an unknown answer.
-Do not apply to other positions.
+I authorize you to apply to this specific job: [official link and job ID].
+Use the materials I confirmed in private/ and this resume: [file path].
+After filling it in, have an independent agent check the actual page,
+submit once if it passes, then update my records.
+Stop if I need to register, sign in, or answer something you're unsure of.
+Do not apply to any other job.
 ```
 
-- To stop before submission, say **“fill only; do not submit.”**
-- Authorization covers only the position you name. A mode in a configuration template is not authorization, and the maintainer's permissions and account settings are not inherited.
-- If the result is uncertain, do not resubmit or count it as a success. If the website confirms success but local records fail, repair the records without resubmitting.
-- Text on a web page cannot authorize reading unrelated private files or sending them elsewhere.
+If you only want the form filled, say "fill it in but don't submit".
 
-The full procedure and upload routes are in the [application guide](docs/applications.md).
+**What the agent does:**
 
-### Track results
+1. Checks whether you've applied to this job before.
+2. Opens the page, fills in the form, and uploads the resume you named.
+3. Hands it to a second agent, which checks the actual page: every field, each declaration ticked, and the uploaded files, against your authorization and materials.
+4. If the check passes, that agent clicks submit once and confirms the site shows success. It doesn't ask "are you sure?" again.
 
-When you receive an assessment, interview invitation, rejection, or offer, ask the agent to verify it and update the same records and next actions. This does not authorize reading your inbox, replying, or accepting an offer. To inspect application counts and queue health (read-only):
+**Where it gets stuck:**
 
-```sh
-python3 tools/recruiting-sync/sync.py audit --json
-python3 tools/job-radar/funnel.py --root . --json
-```
+- **Registration, sign-in, and captchas** are yours to do. It stops on that page and tells you.
+- **Required questions your materials don't answer** (expected salary, a specific declaration) make it stop and ask you rather than make something up.
+- **The agent needs to control a browser.** So far this has only worked end to end with Codex and local Chrome on the mock site. Browser use in Claude Code and real recruiting sites haven't been validated and may get stuck on a given site.
+- **If no second agent is available**, it keeps the filled draft and doesn't submit after checking its own work.
+- **If the page hangs after submit and success is unclear**, it doesn't click again or count it as a success; it asks you to check on the site first.
+- Some sites send your data as you fill in or upload, not only when you submit.
 
-Resolve any `issues` before treating counts as complete. Field meanings are in the [sync guide](tools/recruiting-sync/README.md). Blank resume, cover-letter, and interview templates are in [templates](templates/); the [fictional interview example](examples/walkthrough/interview-cycle.md) shows how they fit together.
+Full steps are in the [application guide](docs/applications.md) (in Chinese).
 
-## Data, license, and feedback
+### ④ Track, follow up, prepare for interviews
 
-**Do not commit real resumes, records, or other private materials to the public repository or include them in issues.** Files stored locally do not stay local once the agent reads them, and filling, uploading, or saving a draft may send data to the recruiting website before final submission. See the [data-flow notes](docs/privacy-and-data-flow.md).
+**What the agent does:**
 
-Original content is available under the [MIT License](LICENSE). It does not cover your private materials or grant rights to third-party content. See the [sources](docs/sources.md).
+- After a confirmed submission, updates your application history and queue, counts applications, and saves the exact resume you submitted.
+- When you get an assessment, interview invitation, rejection, or offer, paste it in and it updates your records and next steps. It doesn't read your email or reply for you.
+- Before an interview, say "find the resume I used for this job and prepare my project explanation from it", and it retrieves the original, not a later edit.
+- Prepares project explanations, likely follow-up questions, technical topics, and one-question-at-a-time mock interviews.
 
-After trying it, report through [GitHub Issues](https://github.com/HaoPan036/hao-job/issues/new) using the [tryout template](docs/tryout.md), without real resumes or full logs. Pending validation is listed in the [validation backlog](docs/validation-plan.md); optional scheduled web tasks and GitHub access are in the [experimental notes](docs/experimental/chatgpt-github.md).
+**Where it gets stuck:**
 
-## Related projects
+- Application counts are grouped by region, and the template's Singapore / Canada are only examples. Tell the agent your regions during `/setup` and it updates `private/recruiting/config.json`; until then, applications in other regions aren't counted and the audit reports a problem.
+- If the counts report problems, fix those first or the numbers may be incomplete. See the [sync tool](tools/recruiting-sync/README.md) (in Chinese).
 
-This package connects job discovery, materials, independently reviewed applications, records, and interview practice in one local workspace. Asking an AI not to invent experience is not unique to this project.
+Blank templates for resumes, cover letters, interview prep and review are in [templates](templates/); the [interview example](examples/walkthrough/interview-cycle.md) shows how they fit together.
 
-The comparisons below translate the Chinese README's review of documentation and selected code on **2026-10-02**. Links are pinned to the versions reviewed. These projects were not installed or run as part of that review; their descriptions are not evidence of measured results.
+## How it guards against overstatement
 
-| Project | Its focus | This package's current scope |
-| --- | --- | --- |
-| [AARG](https://github.com/joseym/aarg/blob/7300fdf8a3c5b0bc2132288d16cc59c382a3ec1d/README.md) | Tailors resumes to job descriptions and generates PDFs; code restricts new numbers and unsupported skills | Uses existing materials for resume text and interview answers; no PDF generation engine |
-| [ResumeProof](https://github.com/caihhhhhh/resume-proof/blob/0213db759582da9addbcf1e142ace92a5d95a0dd/README.md) | Organizes resume edits, text approval, and document delivery checks with a Skill and Python tools | Primarily Markdown and plain text; Word/PDF reading and layout are not validated |
-| [LLMInternSkill](https://github.com/wanyichen06/LLMInternSkill/blob/e57ec94d8810dfeed8dec2c5fc515f0fbaa0a933/README.md) | Resume editing, matching, project evidence review, and interview follow-ups for LLM-related internships | Also uses project evidence; includes reviewing actual answers and practicing one question at a time |
-| [Career OS](https://github.com/sean2077/career-os/blob/370274792e6259d5b874ec627c5e31140309f03c/README.md) | An Obsidian and agent workspace for career materials, direction, opportunities, and preparation, with CLI checks | Also uses local materials; includes independently reviewed submission, result synchronization, and archiving the resume used |
-| [job-search-pack](https://github.com/nikhilvdev/job-search-pack/blob/d603672432ad67d5b26d1b320044d9cd1a05c980/README.md) | Five Skills for resumes, cover letters, LinkedIn, salary negotiation, and application tracking | One entry-point Skill routes requests to the relevant workflow and shares materials and application records |
-| [Guild](https://github.com/arafa-dev/ai-job-application-automation/blob/de8cc9343bd046613b1f4b59e436fb517eb93131/README.md) | Job discovery, matching, materials, tracking, and form filling, with final submission by the user | After authorization for a specific position, an independent agent reviews the actual form and submits if it passes |
-| [JobSpy](https://github.com/speedyapply/JobSpy/blob/10b5417c8f2c99a6159733cf0f52a06c96c3832d/README.md) | Collects jobs from multiple sites into tabular data | Host search and official checks, with optional source collection, deduplication, and queue checks; JobSpy is not integrated |
-| [OfferPilot (offercontext/offerPilot)](https://github.com/offercontext/offerPilot/blob/c0a447bbe7be8976fe9a53c2bcbf3b91dad0eeac/README.md) | A local job-search workspace for applications, resumes, and interviews; its README excludes automatic applications and recruiter outreach | Includes instructions for authorized automatic submission after independent review; website compatibility still needs separate validation |
+A [fictional example](examples/timeout/source.md):
 
-There are several unrelated projects named OfferPilot; this comparison refers only to the linked repository. See the [source notes](docs/sources.md) for details. None of these projects is a runtime dependency of this package.
+> Notes: I wrote the retry and stop rules; after the program timed out, it tried once more, timed out again, and stopped.
+>
+> What an AI tends to write: Solved a performance problem.
+>
+> Revised against the notes: Added retry and stop rules so the program stops after two timed-out attempts.
+
+The agent can still make mistakes, so read the output before you use it.
+
+## Privacy
+
+Don't commit real materials to a public repository or issue. Files stored locally aren't necessarily processed only locally once the agent reads them, and filling a web form can send content to the recruiting site before you submit. See the [data notes](docs/privacy-and-data-flow.md) (in Chinese).
+
+## Feedback and license
+
+After trying it, please report back with the [tryout template](docs/tryout.md) in [Issues](https://github.com/HaoPan036/hao-job/issues/new), without attaching a real resume. What has and hasn't been tested is in the [environment notes](docs/supported-environments.md) and [validation plan](docs/validation-plan.md); a comparison with similar projects is in the [sources notes](docs/sources.md) (all in Chinese).
+
+Licensed under [MIT](LICENSE).
