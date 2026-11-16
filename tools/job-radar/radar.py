@@ -21,7 +21,8 @@ sys.dont_write_bytecode = True
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
-from haojob_common import clean_text, contains_job_id
+from haojob_common import canonical_url, clean_text, contains_job_id
+from haojob_common.urls import normalize_url_component as _normalize_url_component
 
 
 AUTO_QUEUE_START = "<!-- job-radar:auto:start -->"
@@ -132,33 +133,9 @@ def normalize_for_match(value: str) -> str:
     return unicodedata.normalize("NFKC", clean_text(value)).casefold()
 
 
-def normalize_url_component(value: str, safe: str) -> str:
-    # Only unreserved escapes are interchangeable with literal URI characters.
-    # Keep encoded delimiters such as %2F and %3F encoded: they may be job IDs.
-    unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-
-    def normalize_escape(match: re.Match) -> str:
-        character = chr(int(match.group(0)[1:], 16))
-        return character if character in unreserved else match.group(0).upper()
-
-    value = re.sub(r"%[0-9A-Fa-f]{2}", normalize_escape, value)
-    return urllib.parse.quote(value, safe=safe + "%")
-
-
-def normalize_url(url: str) -> str:
-    parsed = urllib.parse.urlsplit(url)
-    # Preserve meaningful query order, repeated keys and encoded delimiters.
-    # Do not round-trip through parse_qsl, which treats '+' as a space.
-    filtered = []
-    for part in parsed.query.split("&"):
-        key = urllib.parse.unquote(part.partition("=")[0]).lower()
-        if key.startswith("utm_") or key in {"spm", "from", "source"}:
-            continue
-        filtered.append(normalize_url_component(part, "/?:@!$'*+,;=-._~"))
-    return urllib.parse.urlunsplit((
-        parsed.scheme.lower(), parsed.netloc.lower(),
-        normalize_url_component(parsed.path.rstrip("/"), "/:@!$&'*+,;=-._~"),
-        "&".join(filtered), normalize_url_component(parsed.fragment, "/?:@!$&'*+,;=-._~")))
+# One identity form shared with recruiting-sync; outputs are stored as keys.
+normalize_url_component = _normalize_url_component
+normalize_url = canonical_url
 
 
 def markdown_urls(text: str) -> list[str]:

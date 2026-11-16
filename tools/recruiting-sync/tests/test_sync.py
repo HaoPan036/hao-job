@@ -467,6 +467,26 @@ class SyncTests(unittest.TestCase):
         self.assertTrue(all(entry["before_sha256"] == entry["after_sha256"] for entry in result["files"]))
         self.assertNotEqual(sync.canonical_url("https://example.com/a%2Fb"), sync.canonical_url("https://example.com/a/b"))
 
+    def test_url_only_identity_ignores_tracking_parameters_like_radar(self):
+        self.event["application_execution"]["target"].update(job_id=None, official_url="https://Careers.Example.com/jobs/DEMO-SG-001/?utm_source=newsletter&spm=a.b")
+        _, path = self.plan()
+        self.apply(path)
+        self.check(path, True)
+        self.assertNotIn("Software Engineering Intern", (self.root / self.queue).read_text())
+        self.assertIn("utm_source=newsletter", (self.root / self.history).read_text())
+        self.event["application_execution"]["target"]["official_url"] = "https://careers.example.com/jobs/DEMO-SG-001"
+        result, repeated = self.plan()
+        self.assertTrue(all(entry["before_sha256"] == entry["after_sha256"] for entry in result["files"]))
+        self.check(repeated, True)
+        self.assertEqual(self.audit()["history_rows"], 1)
+
+    def test_tracking_parameter_url_match_still_fails_on_explicit_id_conflict(self):
+        self.write_history(self.row(note="Job ID OTHER-001; Fictional row."), {"Singapore / Internship": 1})
+        self.event["application_execution"]["target"]["official_url"] = "https://careers.example.com/jobs/DEMO-SG-001?utm_source=newsletter"
+        self.event["application_execution"]["target"]["job_id"] = "DEMO-SG-777"
+        with self.assertRaisesRegex(sync.SyncError, "explicit job IDs conflict"):
+            self.plan()
+
     def test_numeric_targets_are_respected_without_changing_goals(self):
         self.write_history(targets={"Singapore / Full time": 10, "Canada / Full time": 20, "Singapore / Internship": 5, "Canada / Internship": 5})
         _, path = self.plan()

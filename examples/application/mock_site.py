@@ -25,7 +25,7 @@ WHITELIST = ("tools/application-profile/read.py", "tools/application-record/reco
              "tools/recruiting-sync/sync.py", "templates/recruiting/config.example.json",
              "templates/recruiting/history.md", "templates/recruiting/queue.md") + tuple(
                  "templates/application-profile/" + name for name in PROFILE_FILES) + tuple(
-                 "tools/haojob_common/" + name for name in ("__init__.py", "text.py"))
+                 "tools/haojob_common/" + name for name in ("__init__.py", "text.py", "urls.py"))
 
 
 def fixture_pdf():

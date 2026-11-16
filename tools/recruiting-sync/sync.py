@@ -13,13 +13,13 @@ import string
 import subprocess
 import sys
 import unicodedata
-from urllib.parse import parse_qsl, quote, unquote, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 sys.dont_write_bytecode = True
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
-from haojob_common import contains_job_id
+from haojob_common import canonical_url, contains_job_id
 
 
 DEFAULT_CONFIG = "private/recruiting/config.json"
@@ -496,17 +496,6 @@ def links(value):
         if depth == 0:
             result.append(value[start:cursor - 1])
     return result
-
-
-def canonical_url(value):
-    parts = urlsplit(value)
-    def escapes(component):
-        def replacement(match):
-            char = chr(int(match.group(1), 16))
-            return char if char.isascii() and (char.isalnum() or char in "-._~()") else "%" + match.group(1).upper()
-        normalized = re.sub(r"%([0-9A-Fa-f]{2})", replacement, component)
-        return quote(normalized, safe="/?:@!$&'()*+,;=#[]%")
-    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), escapes(parts.path).rstrip("/"), escapes(parts.query), escapes(parts.fragment)))
 
 
 def labeled_ids(value):

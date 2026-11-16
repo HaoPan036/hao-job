@@ -6,5 +6,6 @@ identical across tools belongs here.
 """
 
 from .text import clean_text, contains_job_id
+from .urls import canonical_url
 
-__all__ = ["clean_text", "contains_job_id"]
+__all__ = ["canonical_url", "clean_text", "contains_job_id"]

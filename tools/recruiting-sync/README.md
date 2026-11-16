@@ -82,7 +82,7 @@ python3 tools/recruiting-sync/sync.py audit
 事件保留 `schema_version`、`application_execution`、`sync`。`application_execution` 保留 `target`、`outcome`、`result_timestamp`、`application_id`、`submission_evidence`；`sync` 是展示和计数参数，不是另一个申请状态。
 
 - 只接受 `outcome: "success_proven"`，且至少一项 `official_confirmation` 或 `user_confirmation`。字段校验不能证明声明真实。
-- `target.job_id`、`target.official_url` 至少一个非空；公司与完整编号或准确链接用于匹配。仅对已核实属于同一投递单元的身份填写 `aliases`。
+- `target.job_id`、`target.official_url` 至少一个非空；公司与完整编号或准确链接用于匹配。链接与 Job Radar 去重使用同一比较形式：忽略 `utm_*`、`spm`、`from`、`source` 参数、主机大小写和末尾斜杠，`%2F` 与 `/`、`+` 与 `%20` 仍视为不同；台账中的原链接不改写。仅对已核实属于同一投递单元的身份填写 `aliases`。
 - 未知提交日、结果时间、申请编号和材料编号使用 `null`，不能用确认日填补提交日。非空时间戳必须含时区。
 - `sync.region` 必须是配置地区键；`employment_type` 保留 `full_time` / `internship`。`location` 必须通过配置别名明确归类，不能从候选人的居住地推断。
 - `status`、`note` 只保存有依据的状态和必要说明，不放账号、密码、验证码、联系方式、敏感声明、原始回执或认证链接。
