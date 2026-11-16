@@ -18,7 +18,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for tool in haojob_common repo-check application-profile application-record recruiting-sync job-radar workspace skill-install; do
-            python -m unittest discover -s "tools/$tool/tests" -v
+          shopt -s nullglob
+          suites=(tools/*/tests)
+          if [ "${#suites[@]}" -eq 0 ]; then
+            echo "no tools/*/tests directories found" >&2
+            exit 1
+          fi
+          for suite in "${suites[@]}"; do
+            python -m unittest discover -s "$suite" -v
           done
           python -m unittest discover -s examples/application/tests -v
