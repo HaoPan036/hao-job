@@ -99,7 +99,7 @@ python3 tools/job-radar/radar.py --profile private/job-search/profile.json --can
 
 URL 中的括号、非 ASCII 字符和空格统一到与 Markdown 写入相同的编码；已编码的路径分隔符和查询分隔符保持区分，有效查询参数的顺序及重复键也保留，避免把不同职位标识合并。
 
-写回前，Git 工作区内的 profile、candidate、queue 和 history 必须同时满足 ignored 和 untracked。离线 `radar.py` 不创建日报、数据库、日志或候选文件，不写已提交状态。保存前的重读可以发现常见并发修改，但不是文件锁或跨文件事务；不要让两个执行者同时写队列。
+写回前，Git 工作区内的 profile、candidate、queue 和 history 必须同时满足 ignored 和 untracked，且路径中不能有符号链接。离线 `radar.py` 不创建日报、数据库、日志或候选文件，不写已提交状态。保存前的重读可以发现常见并发修改，但不是文件锁或跨文件事务；不要让两个执行者同时写队列。
 
 这一步仅负责满足队列门的新增项。Agent 仍需保存 `manual_review`、`excluded`、`duplicate` 指针，更新公司覆盖/当前行动，再核对完整批次。达到 `max_new_per_run` 的其他已评价项不能消失；继续处理或明确报告剩余写回未完成。
 

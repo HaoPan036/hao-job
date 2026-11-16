@@ -19,6 +19,7 @@ import urllib.request
 sys.dont_write_bytecode = True
 import collect
 import radar
+from haojob_common import paths as common_paths
 
 
 TOOL_DIR = Path(__file__).resolve().parent
@@ -45,22 +46,14 @@ def fail(message: str) -> None:
 def private_path(value: Path, *, must_exist: bool = False) -> Path:
     try:
         collect.reject_symlinks(value)
-        path = value.resolve()
-        ancestor = path.parent
-        while not ancestor.exists() and ancestor != ancestor.parent:
-            ancestor = ancestor.parent
-        repo = subprocess.run(["git", "-C", str(ancestor), "rev-parse", "--show-toplevel"],
-                              capture_output=True, text=True, check=False)
-        if repo.returncode:
-            fail("bridge paths must belong to a Git repository and be ignored and untracked")
-        root = Path(repo.stdout.strip()).resolve()
-        relative = path.relative_to(root).as_posix()
-        ignored = subprocess.run(["git", "-C", str(root), "check-ignore", "-q", "--", relative],
-                                 capture_output=True, check=False)
-        tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--", relative],
-                                 capture_output=True, check=False)
-        if ignored.returncode or tracked.returncode or tracked.stdout:
-            fail("bridge paths must be ignored and untracked")
+        try:
+            path = common_paths.require_private_path(value, allow_outside_git=False)
+        except common_paths.PathPolicyError as error:
+            if error.reason == "outside_git":
+                fail("bridge paths must belong to a Git repository and be ignored and untracked")
+            if error.reason == "not_private":
+                fail("bridge paths must be ignored and untracked")
+            raise
         if path.exists() and not path.is_file():
             fail("bridge file path must be a regular file")
         if must_exist and not path.is_file():

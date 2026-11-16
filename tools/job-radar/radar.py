@@ -12,7 +12,6 @@ from dataclasses import asdict, dataclass, fields
 import json
 from pathlib import Path
 import re
-import subprocess
 import sys
 import unicodedata
 import urllib.parse
@@ -21,7 +20,7 @@ sys.dont_write_bytecode = True
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
-from haojob_common import canonical_url, clean_text, contains_job_id
+from haojob_common import PathPolicyError, canonical_url, clean_text, contains_job_id, require_private_path
 from haojob_common.urls import normalize_url_component as _normalize_url_component
 
 
@@ -316,20 +315,13 @@ def read_exact(path: Path) -> str:
 
 def require_local_runtime_path(path: Path) -> None:
     """Inside a Git workspace, runtime material must be ignored and untracked."""
-    path = path.resolve()
-    root = subprocess.run(["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
-                          capture_output=True, text=True, check=False)
-    if root.returncode:
+    try:
         # A caller-selected directory outside Git is also a supported workspace.
-        return
-    repository = Path(root.stdout.strip())
-    relative = str(path.relative_to(repository))
-    tracked = subprocess.run(["git", "-C", str(repository), "ls-files", "--error-unmatch", "--", relative],
-                             capture_output=True, check=False)
-    ignored = subprocess.run(["git", "-C", str(repository), "check-ignore", "-q", "--", relative],
-                             capture_output=True, check=False)
-    if tracked.returncode == 0 or ignored.returncode != 0:
-        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {path}")
+        require_private_path(path, allow_outside_git=True)
+    except PathPolicyError as error:
+        if error.reason == "symlink":
+            raise ValueError(f"symbolic links are not allowed in runtime paths: {error.path}") from None
+        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {error.path}") from None
 
 
 def preflight_application_queue(path: Path, history_path: Path) -> tuple[str, str, int, int]:

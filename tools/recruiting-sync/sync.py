@@ -19,7 +19,7 @@ sys.dont_write_bytecode = True
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
-from haojob_common import canonical_url, contains_job_id
+from haojob_common import PathPolicyError, canonical_url, contains_job_id, reject_symlinks, require_private_path
 
 
 DEFAULT_CONFIG = "private/recruiting/config.json"
@@ -197,16 +197,13 @@ def safe_path(root, value, private=False):
         fail("path: outside repository")
     if not relative.parts:
         fail("path: repository root is not a file destination")
-    current = root
-    for part in relative.parts:
-        current = current / part
-        if current.is_symlink():
-            fail("path: symlink forbidden")
-    if private:
-        result = subprocess.run(["git", "-C", str(root), "check-ignore", "--quiet", "--", relative.as_posix()], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--", relative.as_posix()], capture_output=True)
-        if result.returncode or tracked.returncode or tracked.stdout:
-            fail("privacy: execution artifacts must be ignored and untracked")
+    try:
+        reject_symlinks(path)
+        if private:
+            # The repository is required: Git is queried in this root only.
+            require_private_path(path, allow_outside_git=False, repository=root)
+    except PathPolicyError as error:
+        fail("path: symlink forbidden" if error.reason == "symlink" else "privacy: execution artifacts must be ignored and untracked")
     return path
 
 

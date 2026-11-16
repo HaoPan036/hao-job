@@ -30,6 +30,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import radar
 from radar import RequirementEvidence
+from haojob_common import paths as common_paths
 
 load_json = radar.load_json
 SOURCE_TYPES = {"html", "rss", "ashby", "greenhouse", "lever", "mycareersfuture",
@@ -1418,16 +1419,11 @@ def render_digest(rows: list[ScoredItem], errors: list[str], counts: dict[str, i
 
 
 def reject_symlinks(path: Path) -> None:
-    candidate = path.expanduser()
-    if not candidate.is_absolute():
-        candidate = Path.cwd() / candidate
-    for component in (candidate, *candidate.parents):
-        if component.is_symlink():
-            # macOS exposes its standard temporary directory through /var.
-            system_aliases = {Path("/var"): Path("/private/var"), Path("/tmp"): Path("/private/tmp")}
-            if sys.platform == "darwin" and system_aliases.get(component) == component.resolve():
-                continue
-            raise ValueError(f"symbolic links are not allowed in collector paths: {component}")
+    try:
+        # Keeps the macOS /var and /tmp system aliases allowed.
+        common_paths.reject_symlinks(path.expanduser())
+    except common_paths.PathPolicyError as error:
+        raise ValueError(f"symbolic links are not allowed in collector paths: {error.path}") from None
 
 
 def configured_path(profile_path: Path, value: str) -> Path:
@@ -1450,22 +1446,10 @@ def fixture_path(root: Path, value: str) -> Path:
 def require_runtime_path(path: Path) -> None:
     """Check even when output parent directories do not exist yet."""
     reject_symlinks(path)
-    path = path.resolve()
-    ancestor = path.parent
-    while not ancestor.exists() and ancestor != ancestor.parent:
-        ancestor = ancestor.parent
-    result = subprocess.run(["git", "-C", str(ancestor), "rev-parse", "--show-toplevel"],
-                            capture_output=True, text=True, check=False)
-    if result.returncode:
-        return
-    root = Path(result.stdout.strip()).resolve()
-    relative = str(path.relative_to(root))
-    tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--error-unmatch", "--", relative],
-                             capture_output=True, check=False)
-    ignored = subprocess.run(["git", "-C", str(root), "check-ignore", "-q", "--", relative],
-                             capture_output=True, check=False)
-    if tracked.returncode == 0 or ignored.returncode != 0:
-        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {path}")
+    try:
+        common_paths.require_private_path(path, allow_outside_git=True)
+    except common_paths.PathPolicyError as error:
+        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {error.path}") from None
 
 
 def atomic_write(path: Path, text: str) -> None:
