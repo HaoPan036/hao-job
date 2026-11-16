@@ -153,6 +153,9 @@ class CollectionTests(unittest.TestCase):
         tools.mkdir()
         for name in ("collect.py", "radar.py"):
             shutil.copyfile(ROOT / "tools/job-radar" / name, tools / name)
+        # The scripts import the shared package from the directory above them.
+        shutil.copytree(ROOT / "tools/haojob_common", self.root / "haojob_common",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         before = {str(p.relative_to(self.root)): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
         environment = dict(os.environ)
         environment.pop("PYTHONDONTWRITEBYTECODE", None)

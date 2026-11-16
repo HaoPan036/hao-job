@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict, dataclass, fields
-import html
 import json
 from pathlib import Path
 import re
@@ -17,6 +16,12 @@ import subprocess
 import sys
 import unicodedata
 import urllib.parse
+
+sys.dont_write_bytecode = True
+TOOLS_DIR = Path(__file__).resolve().parents[1]
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+from haojob_common import clean_text, contains_job_id
 
 
 AUTO_QUEUE_START = "<!-- job-radar:auto:start -->"
@@ -121,10 +126,6 @@ class RecruitingSyncValidation:
     @property
     def passed(self) -> bool:
         return self.orphan_count == 0 and not self.errors
-
-
-def clean_text(value: str) -> str:
-    return re.sub(r"\s+", " ", html.unescape(value)).strip()
 
 
 def normalize_for_match(value: str) -> str:
@@ -432,8 +433,7 @@ def update_application_queue(path: Path, history_path: Path, rows: list[JobDossi
     return len(additions)
 
 
-def contains_stable_job_id(text: str, job_id: str) -> bool:
-    return re.search(rf"(?<![A-Za-z0-9_-]){re.escape(job_id)}(?![A-Za-z0-9_-])", text) is not None
+contains_stable_job_id = contains_job_id
 
 
 def queue_disposition_annotations(queue_text: str, batch_date: str) -> tuple[dict[str, int], ...]:

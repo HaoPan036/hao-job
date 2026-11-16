@@ -12,7 +12,7 @@
 python3 examples/application/mock_site.py setup --root /tmp/job-workspace-demo
 ```
 
-`setup` 明确白名单复制三个工具实现（profile、record、recruiting-sync），八个 profile JSON 模板，以及 recruiting 的 config、history、queue 模板。它初始化独立 Git 仓库和 `**/private/` 忽略规则，生成一页有效的虚构 PDF，并在 stdout 输出绝对路径、实际 SHA256、字段全文和岗位。不会读取个人档案或导入私有历史。
+`setup` 明确白名单复制三个工具实现（profile、record、recruiting-sync）及其共用的 `tools/haojob_common/`，八个 profile JSON 模板，以及 recruiting 的 config、history、queue 模板。它初始化独立 Git 仓库和 `**/private/` 忽略规则，生成一页有效的虚构 PDF，并在 stdout 输出绝对路径、实际 SHA256、字段全文和岗位。不会读取个人档案或导入私有历史。
 
 生成内容包括：
 

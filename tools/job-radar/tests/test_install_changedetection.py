@@ -82,6 +82,9 @@ class InstallerTests(unittest.TestCase):
         scripts.mkdir()
         for name in ("install_changedetection.py", "collect.py", "radar.py"):
             shutil.copyfile(installer.TOOL_DIR / name, scripts / name)
+        # The scripts import the shared package from the directory above them.
+        shutil.copytree(installer.TOOL_DIR.parent / "haojob_common", self.root / "haojob_common",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         self.config["components"] = ["server"]
         self.save()
         before = self.snapshot()

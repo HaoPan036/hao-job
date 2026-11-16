@@ -60,6 +60,8 @@ class SetupTests(unittest.TestCase):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(setup.PACKAGE / relative, destination)
+        shutil.copytree(setup.PACKAGE / "tools/haojob_common", self.root / "tools/haojob_common",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copytree(setup.PACKAGE / "templates", self.root / "templates")
         before = {str(path.relative_to(self.root)) for path in self.root.rglob("*")}
         environment = {key: value for key, value in os.environ.items()

@@ -15,6 +15,12 @@ import sys
 import unicodedata
 from urllib.parse import parse_qsl, quote, unquote, urlsplit, urlunsplit
 
+sys.dont_write_bytecode = True
+TOOLS_DIR = Path(__file__).resolve().parents[1]
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+from haojob_common import contains_job_id
+
 
 DEFAULT_CONFIG = "private/recruiting/config.json"
 DEFAULT_PATHS = {"history": "private/recruiting/history.md", "queue": "private/recruiting/queue.md"}
@@ -507,8 +513,7 @@ def labeled_ids(value):
     return set(re.findall(r"(?:^|[；;]\s*)" + ID_LABEL + r"\s*[:：]?\s*`?([A-Za-z0-9][A-Za-z0-9_-]*)", value, re.I))
 
 
-def has_id(value, job_id):
-    return re.search(r"(?<![A-Za-z0-9_-])" + re.escape(job_id) + r"(?![A-Za-z0-9_-])", value) is not None
+has_id = contains_job_id
 
 
 def title_ids(value):

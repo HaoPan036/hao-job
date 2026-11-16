@@ -93,6 +93,9 @@ class BridgeTests(unittest.TestCase):
         tools.mkdir()
         for name in ("changedetection_bridge.py", "collect.py", "radar.py"):
             shutil.copyfile(bridge.TOOL_DIR / name, tools / name)
+        # The scripts import the shared package from the directory above them.
+        shutil.copytree(bridge.TOOL_DIR.parent / "haojob_common", self.root / "haojob_common",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         script = tools / "changedetection_bridge.py"
         before = {str(path.relative_to(self.root)) for path in self.root.rglob("*")}
         env = dict(os.environ)

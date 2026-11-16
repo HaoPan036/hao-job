@@ -121,10 +121,7 @@ class LinkExtractor(HTMLParser):
         self._text = []
 
 
-def clean_text(value: str) -> str:
-    value = html.unescape(value)
-    value = re.sub(r"\s+", " ", value)
-    return value.strip()
+clean_text = radar.clean_text
 
 
 def normalize_for_match(value: str) -> str:
