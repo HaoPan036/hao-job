@@ -71,14 +71,15 @@ python3 examples/application/mock_site.py reconcile --root /tmp/job-workspace-de
 - `private/mock-plan/changes.patch` 和 `plan.json`：针对虚构 history、queue 的可审阅补丁，**尚未应用**。
 - `private/application-records/records/synthetic-demo-sg-001.json`：实际模拟上传的材料记录；CV 对象按 SHA256 保存。
 
-让执行 Agent 审阅并在演练根目录用 `apply_patch` 应用该补丁，再验证：
+让执行 Agent 审阅该补丁后，优先用 `apply` 应用同一计划（它会自动验证）；宿主有 `apply_patch` 工具时也可在演练根目录用它应用补丁，再运行 `verify`：
 
 ```sh
+python3 /tmp/job-workspace-demo/tools/recruiting-sync/sync.py apply --root /tmp/job-workspace-demo --plan private/mock-plan/plan.json
 python3 /tmp/job-workspace-demo/tools/recruiting-sync/sync.py verify --root /tmp/job-workspace-demo --plan private/mock-plan/plan.json
 python3 /tmp/job-workspace-demo/tools/recruiting-sync/sync.py audit --root /tmp/job-workspace-demo
 ```
 
-预期是 `VERIFY_PASS`、`AUDIT_PASS`，待投条目已移除，Singapore / Internship 和 All submitted 各增加 1。补丁应用前重跑 reconcile 会复用计划并返回归档 `unchanged`；应用后直接使用 `verify`，不要重跑旧计划的 `check`。任何本地同步失败都只修复本地记录，不能再点击 Submit。
+预期是 `APPLY_PASS`、`VERIFY_PASS`、`AUDIT_PASS`，待投条目已移除，Singapore / Internship 和 All submitted 各增加 1。补丁应用前重跑 reconcile 会复用计划并返回归档 `unchanged`；应用后直接使用 `verify`，不要重跑旧计划的 `check`；对已应用的计划重跑 `apply` 不会再写入。任何本地同步失败都只修复本地记录，不能再点击 Submit。
 
 ## 5. 不明确结果分支
 

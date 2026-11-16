@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plan and verify local recruiting-note edits; never apply them."""
+"""Plan, apply and verify local recruiting-note edits; never submit applications."""
 
 import argparse
 import datetime as dt
@@ -12,6 +12,7 @@ import re
 import string
 import subprocess
 import sys
+import tempfile
 import unicodedata
 from urllib.parse import parse_qsl, unquote, urlsplit
 
@@ -796,6 +797,64 @@ def check_plan(root, plan_path, verify=False, config_path=DEFAULT_CONFIG):
     return plan
 
 
+def replace_note(root, name, data, expected_sha256):
+    """Write one note atomically in its own directory; never through a symlink."""
+    path = safe_path(root, name, True)
+    mode = os.stat(path, follow_symlinks=False).st_mode & 0o7777
+    descriptor, temporary = tempfile.mkstemp(dir=path.parent, prefix="." + path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, mode)
+        # Re-read just before replacing so a concurrent edit is not overwritten.
+        if digest(read_bytes(safe_path(root, name, True))) != expected_sha256:
+            fail("snapshot: note changed during apply")
+        os.replace(temporary, path)
+    finally:
+        if os.path.lexists(temporary):
+            os.unlink(temporary)
+
+
+def apply_plan(root, plan_path, config_path=DEFAULT_CONFIG):
+    """Apply a checked plan by re-deriving it from current notes, then verify.
+
+    Returns the plan and the files written. Not a cross-file transaction.
+    """
+    root = repository(root)
+    config = load_config(root, config_path)
+    plan = load_plan(root, plan_path, config)
+    current = notes(root, config)
+    states = {entry["path"]: digest(current[entry["path"]].encode()) for entry in plan["files"]}
+    if any(states[entry["path"]] != entry["after_sha256"] for entry in plan["files"]):
+        if any(states[entry["path"]] not in (entry["before_sha256"], entry["after_sha256"]) for entry in plan["files"]):
+            fail("snapshot: stale plan; replan from current notes")
+        if any(states[entry["path"]] != entry["before_sha256"] for entry in plan["files"]):
+            fail("snapshot: plan partially applied; run verify or replan from current notes")
+        before, after, counts, issues = plan_changes(root, plan["event"], config, plan["counts_mode"])
+        derived = [(digest(before[entry["path"]].encode()), digest(after[entry["path"]].encode())) for entry in plan["files"]]
+        if derived != [(entry["before_sha256"], entry["after_sha256"]) for entry in plan["files"]] or digest(patch_for(before, after).encode("utf-8")) != plan["patch_sha256"] or counts != plan["counts"] or len(issues) != plan["legacy_unclassified"]:
+            fail("plan: derived changes differ from plan; replan from current notes")
+        pending = [entry for entry in plan["files"] if entry["before_sha256"] != entry["after_sha256"]]
+        written = []
+        for entry in pending:
+            try:
+                replace_note(root, entry["path"], after[entry["path"]].encode("utf-8"), entry["before_sha256"])
+            except (SyncError, OSError) as exc:
+                remaining = [item["path"] for item in pending if item["path"] not in written]
+                reason = str(exc) if isinstance(exc, SyncError) else "local write failed"
+                fail("apply: stopped at " + entry["path"] + " (" + reason + "); updated: " + (", ".join(written) or "none") + "; not updated: " + ", ".join(remaining) + "; the application is already submitted, do not submit it again; run verify, or replan from current notes")
+            written.append(entry["path"])
+    else:
+        written = []
+    try:
+        check_plan(root, plan_path, True, config_path)
+    except SyncError as exc:
+        fail("apply: updated: " + (", ".join(written) or "none") + "; verify failed: " + str(exc))
+    return plan, written
+
+
 def audit(root, config_path=DEFAULT_CONFIG):
     root = repository(root)
     config = load_config(root, config_path)
@@ -813,7 +872,7 @@ def audit(root, config_path=DEFAULT_CONFIG):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for command in ("plan", "check", "verify", "audit"):
+    for command in ("plan", "check", "apply", "verify", "audit"):
         sub = commands.add_parser(command)
         sub.add_argument("--root", default=Path(__file__).resolve().parents[2])
         sub.add_argument("--config", default=DEFAULT_CONFIG)
@@ -821,7 +880,7 @@ def main(argv=None):
             sub.add_argument("--input", required=True)
             sub.add_argument("--out", required=True)
             sub.add_argument("--counts-mode", choices=COUNTS_MODES, default="strict")
-        elif command in ("check", "verify"):
+        elif command in ("check", "apply", "verify"):
             sub.add_argument("--plan", required=True)
         elif command == "audit":
             sub.add_argument("--json", action="store_true", help="Print existing classified counts and issues as read-only JSON")
@@ -831,6 +890,9 @@ def main(argv=None):
             result = create_plan(args.root, args.input, args.out, args.counts_mode, args.config)
             changed = sum(entry["before_sha256"] != entry["after_sha256"] for entry in result["files"])
             print(f"PLAN_READY changed_files={changed} review_locations={len(result['review_locations'])} counts_mode={result['counts_mode']}")
+        elif args.command == "apply":
+            result, written = apply_plan(args.root, args.plan, args.config)
+            print(f"APPLY_PASS written_files={len(written)} verified=true counts_mode={result['counts_mode']}")
         elif args.command in ("check", "verify"):
             result = check_plan(args.root, args.plan, args.command == "verify", args.config)
             print(("VERIFY_PASS" if args.command == "verify" else "CHECK_PASS") + " counts_mode=" + result["counts_mode"])

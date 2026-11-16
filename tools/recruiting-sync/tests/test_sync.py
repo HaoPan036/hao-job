@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sync.py"
@@ -583,6 +584,134 @@ class SyncTests(unittest.TestCase):
         self.event["application_execution"]["submission_evidence"][0]["reference"] = "Reference: https://careers.example.com/confirmation?session=fabricated"
         with self.assertRaisesRegex(sync.SyncError, "authenticated URL"):
             self.plan()
+
+    def run_apply(self, path):
+        return subprocess.run([sys.executable, str(SCRIPT), "apply", "--root", str(self.root), "--config", self.config_path, "--plan", str(path)], capture_output=True, text=True)
+
+    def leftovers(self):
+        return sorted(item.name for item in (self.root / "private/recruiting").iterdir() if item.name.endswith(".tmp"))
+
+    def test_apply_writes_same_bytes_as_patch_then_verifies(self):
+        self.write_history(targets={"Singapore / Internship": 5})
+        _, path = self.plan()
+        before = self.snapshot()
+        self.apply(path)
+        patched = self.snapshot()
+        for name, data in before.items():
+            (self.root / name).write_bytes(data)
+        mode = (self.root / self.history).stat().st_mode
+        result = self.run_apply(path)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "APPLY_PASS written_files=2 verified=true counts_mode=strict\n")
+        self.assertEqual(patched, self.snapshot())
+        self.assertEqual(mode, (self.root / self.history).stat().st_mode)
+        self.assertIn("| Singapore / Internship | 1 | 5 | 4 |", (self.root / self.history).read_text())
+        self.check(path, True)
+        self.assertEqual(self.audit()["issues"], [])
+        self.assertEqual(self.leftovers(), [])
+        self.assertTrue((path.parent / "changes.patch").is_file())
+
+    def test_apply_refuses_stale_or_tampered_plan_without_writing(self):
+        _, path = self.plan()
+        with (self.root / self.queue).open("a") as handle:
+            handle.write("Concurrent edit.\n")
+        before = self.snapshot()
+        with self.assertRaisesRegex(sync.SyncError, "stale plan"):
+            sync.apply_plan(self.root, path, self.config_path)
+        self.assertEqual(before, self.snapshot())
+        result, fresh = self.plan()
+        result["counts"]["Singapore / Internship"] = 7
+        fresh.write_text(json.dumps(result))
+        with self.assertRaisesRegex(sync.SyncError, "derived changes differ"):
+            sync.apply_plan(self.root, fresh, self.config_path)
+        self.assertEqual(before, self.snapshot())
+        result, other = self.plan()
+        (other.parent / "changes.patch").write_text("tampered")
+        with self.assertRaisesRegex(sync.SyncError, "fingerprint"):
+            sync.apply_plan(self.root, other, self.config_path)
+        self.config_data["regions"]["canada"]["aliases"].append("Ottawa")
+        self.save_config()
+        with self.assertRaisesRegex(sync.SyncError, "config: stale plan"):
+            sync.apply_plan(self.root, path, self.config_path)
+        self.assertEqual(before, self.snapshot())
+
+    def test_apply_is_idempotent_and_never_duplicates_a_row(self):
+        _, path = self.plan()
+        _, written = sync.apply_plan(self.root, path, self.config_path)
+        self.assertEqual(written, [self.history, self.queue])
+        applied = self.snapshot()
+        result = self.run_apply(path)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("written_files=0", result.stdout)
+        self.assertEqual(applied, self.snapshot())
+        result, repeated = self.plan()
+        self.assertTrue(all(entry["before_sha256"] == entry["after_sha256"] for entry in result["files"]))
+        self.assertEqual(sync.apply_plan(self.root, repeated, self.config_path)[1], [])
+        self.assertEqual(applied, self.snapshot())
+        self.assertEqual(self.audit()["history_rows"], 1)
+        self.assertEqual(self.audit()["counts"]["Singapore / Internship"], 1)
+
+    def test_apply_refuses_symlinked_ledger(self):
+        _, path = self.plan()
+        target = self.root / "private/recruiting/real-history.md"
+        history = self.root / self.history
+        target.write_bytes(history.read_bytes())
+        history.unlink()
+        history.symlink_to(target)
+        before = target.read_bytes()
+        result = self.run_apply(path)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("symlink", result.stderr)
+        self.assertEqual(before, target.read_bytes())
+        self.assertTrue(history.is_symlink())
+
+    def test_apply_partial_failure_names_updated_files_and_recovers(self):
+        _, path = self.plan()
+        real_replace = sync.os.replace
+        calls = []
+
+        def replace(source, destination):
+            calls.append(destination)
+            if len(calls) == 2:
+                raise OSError("simulated disk failure")
+            real_replace(source, destination)
+
+        with mock.patch.object(sync.os, "replace", side_effect=replace):
+            with self.assertRaises(sync.SyncError) as caught:
+                sync.apply_plan(self.root, path, self.config_path)
+        message = str(caught.exception)
+        self.assertIn("stopped at " + self.queue, message)
+        self.assertIn("updated: " + self.history + ";", message)
+        self.assertIn("not updated: " + self.queue, message)
+        self.assertIn("do not submit it again", message)
+        self.assertNotIn("Fictional Aurora", message)
+        self.assertEqual(self.leftovers(), [])
+        self.assertIn("Software Engineering Intern", (self.root / self.queue).read_text())
+        with self.assertRaisesRegex(sync.SyncError, "partially applied"):
+            sync.apply_plan(self.root, path, self.config_path)
+        result, recovery = self.plan()
+        self.assertEqual(result["files"][0]["before_sha256"], result["files"][0]["after_sha256"])
+        self.assertEqual(sync.apply_plan(self.root, recovery, self.config_path)[1], [self.queue])
+        self.assertEqual(self.audit()["history_rows"], 1)
+        self.assertEqual(self.audit()["counts"]["Singapore / Internship"], 1)
+
+    def test_apply_does_not_overwrite_edit_made_during_apply(self):
+        _, path = self.plan()
+        real_replace_note = sync.replace_note
+
+        def replace_note(root, name, data, expected):
+            if name == self.queue:
+                # A concurrent edit lands after the history file was written.
+                with (self.root / self.queue).open("a") as handle:
+                    handle.write("Late edit.\n")
+            real_replace_note(root, name, data, expected)
+
+        with mock.patch.object(sync, "replace_note", side_effect=replace_note):
+            with self.assertRaisesRegex(sync.SyncError, r"stopped at .*note changed during apply.*updated: " + self.history):
+                sync.apply_plan(self.root, path, self.config_path)
+        self.assertIn("Late edit.", (self.root / self.queue).read_text())
+        self.assertIn("Software Engineering Intern", (self.root / self.queue).read_text())
+        self.assertEqual(self.leftovers(), [])
 
     def test_plan_snapshot_paths_and_patch_fingerprint_cannot_be_changed(self):
         result, path = self.plan()
