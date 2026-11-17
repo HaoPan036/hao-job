@@ -2,123 +2,68 @@
 
 **简体中文** · [English](README.en.md)
 
-让 **Codex** 或 **Claude Code** 用你自己的资料找岗位、改简历、投递、记录结果和准备面试。每句话都标出依据哪份资料，没依据的不往简历里写。
+让 **Claude Code** 或 **Codex** 用你自己的资料找岗位、改简历、投递、记录结果和准备面试。每句话都标出依据哪份资料，没依据的不往简历里写。
 
 ![演示：Claude Code 用虚构资料写简历条目，列出有意没写的说法和每句话的出处](docs/assets/demo.gif)
 
-[先试一次](#先用示例试一次) · [换成自己的资料](#换成自己的资料) · [可以这样说](#可以直接这样说) · [模拟投递](examples/application/README.md) · [相关项目](#相关项目与范围)
+> 早期版本（Alpha）：还没有陌生用户试用过。测过什么见[环境说明](docs/supported-environments.md)，计划见 [ROADMAP](ROADMAP.md)。
 
-> 早期版本（Alpha）：还没有陌生用户试用过，先用虚构资料。测过什么、还缺什么见[环境说明](docs/supported-environments.md)与 [ROADMAP](ROADMAP.md)。
+## 快速开始
+
+需要 Claude Code 或 Codex 桌面应用，以及 Git 和 Python 3.10+。
+
+```sh
+git clone https://github.com/HaoPan036/hao-job.git
+cd hao-job
+claude          # 用 Codex 时改为在应用里打开这个文件夹
+```
+
+然后对 Agent 说一句话。
+
+**用自己的资料**：在 Claude Code 里输入 `/setup`，后面直接贴上简历；用 Codex 时说“帮我初始化求职资料”，再贴简历。
+
+```text
+/setup
+[把简历或项目经历贴在这里]
+```
+
+Agent 会建好空档案、确认 `private/` 不进 Git、把简历整理成档案和事实卡，最后列出需要你确认的问题。之后就可以直接提要求，见[下一节](#能做什么)。
+
+**先看看效果**：不想贴真实资料时，用仓库里的虚构资料试一次。
+
+```text
+使用 hao-job Skill。
+项目资料在 examples/walkthrough/source.md，
+岗位要求在 examples/walkthrough/target-role.md。
+请根据这些资料，帮我写一条可以放进简历的项目经历，再给一版英文。
+然后帮我准备面试时怎么介绍这个项目。
+写完后告诉我：这些说法分别根据哪段资料，还有哪些地方需要确认。
+先把结果发在对话里，不要修改文件。
+```
+
+想手动初始化、在其他目录使用这个 Skill，或搭配 Obsidian，见[更多文档](#更多文档)。
 
 ## 能做什么
 
-可以只用其中一个环节，也可以从找岗位一直用到面试：
+各环节共用你的资料和求职记录，可以只用其中一个。直接说想做什么：
 
-| 环节 | AI 帮你做什么 | 当前公开版本 |
-| --- | --- | --- |
-| **找岗位** | 按求职方向和条件找机会，核对官网要求，排除重复岗位 | Skill＋可选来源采集、已见记录、报告与保存检查工具 |
-| 改简历 | 根据岗位要求调整项目经历，准备中英文材料、求职信和申请问答 | 已有版本复用规则＋可填写模板 |
-| 填写信息、投递 | 你授权具体岗位后，AI 填写与上传，独立 Agent 审查通过后提交 | 执行与审查规则＋本地模拟网站 |
-| 记录与统计 | 记下投了哪些岗位，保存实际提交的简历，统计投递数量 | 同步、计数、材料归档工具 |
-| 跟进进度 | 收到测评、面试、拒信或 Offer 后核对状态，整理下一步 | 共用既有记录与行动页 |
-| 面试准备、八股文 | 准备项目介绍、常见问题和技术知识，模拟面试、点评回答 | 准备、复盘、陪练模板＋完整虚构示例 |
-
-各环节共用你的资料和求职记录。**投递由你授权具体岗位开始**：独立 Agent 看过实际表单和附件后提交一次，不再要求你例行确认；注册、登录及工具确实要求你接手的步骤除外。
-
-这套流程来自维护者自己求职时长期在用的做法：用 **Obsidian** 整理经历和记录，其余交给 AI。本仓库提供操作规则（Skill）、资料模板、虚构示例和本地工具，在 Agent 里使用。
-
-## 先用示例试一次
-
-用仓库里的虚构资料试改简历，不需要真实简历或招聘网站账号。需要 Codex 桌面应用或 Claude Code，以及 Python 3.10+ 和 Git。Codex 桌面流程在 **macOS** 上试过，Claude Code 的文字流程在 Linux 上试过。
-
-1. 克隆本仓库（也可下载 ZIP 解压，之后先运行 `git init`）：
-
-   ```sh
-   git clone https://github.com/HaoPan036/hao-job.git
-   cd hao-job
-   ```
-
-2. 用 Agent 打开这个文件夹，二选一：
-   - **Codex**：按[官方上手指南](https://learn.chatgpt.com/docs/quickstart)登录，打开这个文件夹。
-   - **Claude Code**：在这个文件夹里运行 `claude`。仓库已带 `.claude/skills/` 和 `CLAUDE.md`，不用另外安装。
-
-   想用笔记界面，可以用 [Obsidian](https://obsidian.md/download) 的“打开本地仓库”打开同一文件夹。
-3. 在这个文件夹中打开终端，运行检查（无需 Node 或额外的 Python 包）：
-
-   ```sh
-   python3 --version
-   git --version
-   python3 tools/repo-check/check.py
-   ```
-
-   正常输出 `repo-check: view=worktree errors=0 warnings=0`。`python3` 低于 3.10 时，换成已安装的新版本（如 `python3.11`）。检查器查项目结构、链接、忽略规则和常见敏感信息格式；出现 `ERROR` 或 `WARN` 先看提示的文件和行号，处理不了可按[试用记录](docs/tryout.md)脱敏反馈。
-
-4. 把下面这段话发给 Agent：
-
-   ```text
-   使用 hao-job Skill。
-   项目资料在 examples/walkthrough/source.md，
-   岗位要求在 examples/walkthrough/target-role.md。
-   请根据这些资料，帮我写一条可以放进简历的项目经历，再给一版英文。
-   然后帮我准备面试时怎么介绍这个项目。
-   写完后告诉我：这些说法分别根据哪段资料，还有哪些地方需要确认。
-   先把结果发在对话里，不要修改文件。
-   ```
-
-   找不到这个 Skill 时，让 Agent 先读 `.agents/skills/hao-job/SKILL.md`，不需要改全局设置（Codex 见[官方说明](https://learn.chatgpt.com/docs/build-skills)）。Claude Code 要在仓库根目录启动；想在仓库以外的资料目录里用这个 Skill，见[安装说明](tools/skill-install/README.md)。
-
-5. 继续做[完整示例](examples/walkthrough/README.md)：先写简历和面试回答，再补一份资料，看原来的说法该怎样改；做完再对照参考答案。
-
-在 Obsidian 的“外观 → CSS 代码片段”中可开启可选的 `hao-job` 样式；它只整理文件列表。
-
-## 换成自己的资料
-
-最省事的做法：在 Claude Code 里输入 `/setup`，后面可以直接贴一份简历，也可以先把简历、项目笔记**复制**到 `private/inbox/`；用 Codex 时说“帮我初始化求职资料”。Agent 会建好空档案、确认 `private/` 不会进 Git，把资料整理成档案和事实卡，最后列出需要你确认的问题。从简历里抽出的说法一律先记成未核实，你确认过的才能进正式材料。规则见 [初始化流程](.agents/skills/hao-job/references/setup.md)。
-
-想自己动手，按下面的步骤做。
-
-跑通示例后，建好空白资料档案、岗位配置和投递记录（只补缺失模板，不覆盖已有文件，不联网）：
-
-```sh
-python3 tools/workspace/setup.py init
-python3 tools/workspace/setup.py check
-git check-ignore -v private/material-index.md
-```
-
-应依次看到 `INIT_DONE created=17 kept=0`、`SETUP_CHECK_PASS`，以及一行包含 `**/private/` 的忽略规则。最后一条没有输出时，按[初始化说明](tools/workspace/README.md#确认-private-被忽略)排查，通过前只用虚构资料。
-
-然后把需要的 Markdown 或纯文本**复制**到 `private/`，不要移动或覆盖原件。可以先用虚构资料试读：
-
-```sh
-cp -n examples/walkthrough/source.md private/project-notes.md
-```
-
-```text
-请读取 private/project-notes.md，告诉我这份资料描述了什么。
-如果无法读取，请说明原因，不要猜内容，也不要修改文件。
-```
-
-能读到后，在 `private/material-index.md` 登记资料位置：路径相对于 `private/`，如 `project-notes.md`；输出可填 `outputs/`。清单只用来找文件。投递记录里的 Singapore / Canada 分类只是示例，按自己情况修改。资料格式目前支持 Markdown 和纯文本，见[环境说明](docs/supported-environments.md#资料格式)。
-
-## 可以直接这样说
-
-Skill 是一套给 Agent 的操作说明。你提供资料，再直接说想做什么：
-
-| 你想做什么 | 可以直接这样说 |
+| 环节 | 可以这样说 |
 | --- | --- |
-| 找合适的工作 | “按我的求职条件找几个岗位。打开官网核对要求，告诉我哪些值得投；先不要保存，也不要申请。” |
+| **找岗位** | “按我的求职条件找几个岗位。打开官网核对要求，告诉我哪些值得投；先不要保存，也不要申请。” |
 | 保存筛选结果 | “把刚才核实过的岗位整理进我的待办；不符合的写清原因，已经投过的别再加。” |
-| 看今天先做什么 | “看看我的待办和已确认的截止日期，告诉我今天先做哪几件事；先不要改记录。” |
-| 更新面试进度 | “这个岗位发来面试邀请了。这是邀请内容，请核对并更新记录和待办，不用替我回复。” |
-| 看看项目经历有没有写过头 | “对照我的项目笔记，看看简历里有没有夸大的地方。拿不准的地方标出来，问我。” |
-| 针对一个岗位改简历 | “这是我的简历和岗位要求，帮我改一下项目经历，突出与岗位有关的部分，不要加我没做过的事。” |
-| 准备项目介绍和追问 | “我要面试这个岗位。帮我准备怎么介绍这个项目，以及面试官可能追问什么。” |
-| 准备常见技术题 | “这个岗位会问哪些技术问题？先从我不熟悉的知识讲起，再出题看看我有没有理解。” |
-| 复盘和练习面试 | “你来当面试官，根据我的简历一次问一道。等我回答后，告诉我哪里没说清楚、怎么答更好。” |
+| 核对经历 | “对照我的项目笔记，看看简历里有没有夸大的地方。拿不准的地方标出来，问我。” |
+| **改简历** | “这是我的简历和岗位要求，帮我改一下项目经历，突出与岗位有关的部分，不要加我没做过的事。” |
+| **投递** | 见[投递](#投递) |
+| 记录与统计 | “我一共投了多少个岗位？按实习和全职分开。” |
+| 跟进进度 | “这个岗位发来面试邀请了。这是邀请内容，请核对并更新记录和待办，不用替我回复。” |
+| 今日安排 | “看看我的待办和已确认的截止日期，告诉我今天先做哪几件事；先不要改记录。” |
+| **面试准备** | “我要面试这个岗位。帮我准备怎么介绍这个项目，以及面试官可能追问什么。” |
+| 八股文 | “这个岗位会问哪些技术问题？先从我不熟悉的知识讲起，再出题看看我有没有理解。” |
+| 模拟面试 | “你来当面试官，根据我的简历一次问一道。等我回答后，告诉我哪里没说清楚、怎么答更好。” |
 
 需要英文版时加一句：“再给我一版英文，职责和结果要与中文一致。”
 
-Agent 应另外说明每个关键说法来自哪份资料、还有哪些没确认（[Skill 规则](.agents/skills/hao-job/references/evidence.md)）。例如这份[虚构项目记录](examples/timeout/source.md)：
+Agent 会说明每个关键说法来自哪份资料、还有哪些没确认。例如这份[虚构项目记录](examples/timeout/source.md)：
 
 > 资料：重试和停止规则由我编写；程序超时后又试了一次，还是超时，于是停止运行。
 >
@@ -126,25 +71,9 @@ Agent 应另外说明每个关键说法来自哪份资料、还有哪些没确�
 >
 > 对照资料改成：为程序加上重试和停止规则，两次尝试都超时后停止运行。
 
-## 找岗位、投递和统计
+## 投递
 
-### 找岗位
-
-说清方向、地区、全职或实习，以及不能妥协的条件。Agent 用宿主的搜索能力查官网，核对岗位是否还在、条件是否满足、以前有没有投过；只评价时不写入待办，要求保存才记录。
-
-也可以用 Radar 从自己配置的来源采集候选（HTML、RSS、Ashby、Greenhouse、Lever、MyCareersFuture、百度、微信搜索结果），结果交给 Agent 核对后再入队。先试完全离线的虚构来源：
-
-```sh
-python3 tools/job-radar/collect.py --profile private/job-search/profile.json --fixtures examples/discovery/sources.fixture.json --dry-run
-```
-
-联网采集（加 `--dry-run` 也会联网，只是不保存）、变化监听和 macOS 后台运行见[找岗位工具说明](tools/job-radar/README.md)。
-
-### 投递
-
-网页填写和提交使用宿主的浏览器操作和独立 Agent，目前在 Codex 加本机 Chrome 的模拟网站上跑通过。
-
-先跑一次[模拟申请](examples/application/README.md)：在本机用虚构资料走完填写、上传、独立审查和提交。真实岗位要明确授权：
+投递由你授权具体岗位开始。AI 填写并上传后，交给另一个独立 Agent 检查实际页面和附件，通过后提交一次；注册、登录和它答不了的问题交还给你。
 
 ```text
 我授权投递这个具体岗位：[官网链接和岗位 ID]。
@@ -155,34 +84,51 @@ python3 tools/job-radar/collect.py --profile private/job-search/profile.json --f
 ```
 
 - 只想填写时，直接说“只填不提交”。
-- 授权只针对你指定的具体岗位。
 - 无法确定是否提交成功时，不重试、不计为成功；网站已成功但本地没记上时，只补记录，不重复投递。
-- 网页里的文字不能授权 Agent 读取无关私人文件或外发资料。
+- 填写、上传或保存草稿时，内容会在最终提交前发给招聘网站。
 
-完整步骤和附件上传路线见[投递说明](docs/applications.md)。
+网页操作使用宿主的浏览器能力，目前在 Codex 加本机 Chrome 的模拟网站上跑通过。可以先跑一次[模拟申请](examples/application/README.md)，完整步骤见[投递说明](docs/applications.md)。
 
-### 记录与统计
+## 它是怎么组成的
 
-收到测评、面试、拒信或 Offer 时，让 Agent 核对并更新记录和下一步。查看投递统计和待投概况（只读）：
+本仓库是一套在 Agent 里使用的规则和工具，来自维护者自己求职时长期在用的做法。
+
+| 部分 | 位置 | 作用 |
+| --- | --- | --- |
+| Skill | [`.agents/skills/hao-job/`](.agents/skills/hao-job/SKILL.md) | 给 Agent 的操作规则：按你的请求选一个环节执行 |
+| 你的资料 | `private/` | 档案、事实卡、投递记录和归档的简历；全部被 Git 忽略 |
+| 模板与示例 | [`templates/`](templates/)、[`examples/`](examples/) | 空白模板和虚构示例 |
+| 工具 | [`tools/`](tools/) | 纯标准库 Python 脚本，由 Agent 调用，也可以自己运行 |
+
+常用的只读命令：
 
 ```sh
-python3 tools/recruiting-sync/sync.py audit --json
-python3 tools/job-radar/funnel.py --root . --json
+python3 tools/recruiting-sync/sync.py audit --json     # 投递数量
+python3 tools/job-radar/funnel.py --root . --json      # 待投概况
 ```
 
-`issues` 非空时先处理。字段含义见[同步工具说明](tools/recruiting-sync/README.md)。简历、求职信和面试的空白模板在 [templates](templates/)，串起来的用法见[完整虚构面试示例](examples/walkthrough/interview-cycle.md)。
+## 更多文档
+
+| 想做什么 | 看这里 |
+| --- | --- |
+| 手动初始化、检查 `private/` 是否被忽略 | [初始化工具](tools/workspace/README.md) |
+| 在仓库以外的目录使用 Skill | [安装说明](tools/skill-install/README.md) |
+| 从自己配置的来源自动采集岗位 | [找岗位工具](tools/job-radar/README.md) |
+| 同步投递记录、统计数量 | [同步工具](tools/recruiting-sync/README.md) |
+| 做一遍完整练习并对照参考答案 | [完整示例](examples/walkthrough/README.md)、[面试示例](examples/walkthrough/interview-cycle.md) |
+| 支持的系统、资料格式、Obsidian | [环境说明](docs/supported-environments.md) |
+| 资料会发到哪里 | [数据说明](docs/privacy-and-data-flow.md) |
+| 检查仓库本身 | `python3 tools/repo-check/check.py` |
 
 ## 数据、许可与反馈
 
-真实资料不要提交到公开仓库或 issue。Agent 读取的内容会交给它的模型服务处理；填写、上传或保存草稿时，内容会在最终提交前发给招聘网站。详见[数据说明](docs/privacy-and-data-flow.md)。
+真实资料只放在 `private/`，不要提交到公开仓库或 issue。Agent 读取的内容会交给它的模型服务处理。
 
 本包原创内容采用 [MIT](LICENSE)；来源见[来源说明](docs/sources.md)。
 
-试用后请按[试用记录模板](docs/tryout.md)在 [Issues](https://github.com/HaoPan036/hao-job/issues/new) 回报，不要附真实简历或完整日志。尚待验证的项目见[待验证清单](docs/validation-plan.md)；可选的网页定时任务与 GitHub 接入见[实验说明](docs/experimental/chatgpt-github.md)。
+试用后请按[试用记录模板](docs/tryout.md)在 [Issues](https://github.com/HaoPan036/hao-job/issues/new) 反馈。
 
-## 相关项目与范围
-
-下面这些项目也在做求职工具。本项目把找岗位、材料、经独立审查的投递、记录和面试练习串在一个本地工作区里。
+## 相关项目
 
 以下对比根据 2026-10-02 的文档整理。
 
@@ -196,5 +142,3 @@ python3 tools/job-radar/funnel.py --root . --json
 | [Guild](https://github.com/arafa-dev/ai-job-application-automation/blob/de8cc9343bd046613b1f4b59e436fb517eb93131/README.md) | 找岗位、算匹配程度、生成材料、跟踪投递和填写表单；最终提交由用户完成 | 用户授权具体岗位后，独立 Agent 审查实际页面，通过后提交 |
 | [JobSpy](https://github.com/speedyapply/JobSpy/blob/10b5417c8f2c99a6159733cf0f52a06c96c3832d/README.md) | 从多个招聘网站抓取岗位，整理成表格数据 | 宿主搜索与官网核验，另有可选来源采集、重复和保存检查 |
 | [OfferPilot（offercontext/offerPilot）](https://github.com/offercontext/offerPilot/blob/c0a447bbe7be8976fe9a53c2bcbf3b91dad0eeac/README.md) | 本地求职工作台，管理投递记录、简历和面试准备等；README 明确不自动投递或联系招聘方 | 提供具体岗位授权后的自动投递规则 |
-
-完整来源见[来源说明](docs/sources.md)。
