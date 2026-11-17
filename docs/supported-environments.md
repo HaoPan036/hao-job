@@ -4,16 +4,16 @@
 
 | 组成 | 当前范围 | 验证边界 |
 | --- | --- | --- |
-| Obsidian + Codex 桌面 / macOS | 共享本地目录，Markdown 资料与中英文材料 | 已做下述干净克隆检查；首次安装、新账号与陌生用户尚未验收 |
-| hao-job Skill | 找岗位、事实核对、简历、具体岗位投递、记录、面试准备/复盘/陪练 | 文字流程有独立 Agent 演练；浏览器和网站覆盖单独记录，不等于陌生用户验收 |
+| Obsidian + Codex 桌面 / macOS | 共享本地目录，Markdown 资料与中英文材料 | 已做下述干净克隆检查 |
+| hao-job Skill | 找岗位、事实核对、简历、具体岗位投递、记录、面试准备/复盘/陪练 | 文字流程有独立 Agent 演练；浏览器和网站覆盖单独记录 |
 | Python 与 Git | 初始化、资料读取、前台采集、去重与保存检查、同步计数、归档、仓库检查、虚构模拟网站 | 核心脚本 Python 3.10+、标准库；维护环境 3.11.14；Linux CI 与桌面流程分开记录 |
-| 搜索与官网核验 | 宿主搜索与浏览；可选 Radar collector 联网采集，helper 离线处理已核验记录 | 真实来源与宿主工具逐项验收，解析器 fixture 不证明网站当前可用 |
-| 网页填写与提交 | 执行规则已抽取，依赖浏览器控制和独立 Agent | 本地模拟与真实网站兼容分开；新用户账号、真实 ATS 未逐站验收 |
-| 可选 changedetection 与 macOS 安装器 | 来源变化桥接、失败重试、显式后台安装 | 仅 mock API/服务调用与离线配置检查；第三方服务版本、API、安装和长期运行未验收 |
-| Claude Code | 仓库内 `.claude/skills/` 链接到同一份 Skill，`CLAUDE.md` 引入 `AGENTS.md`；可用[安装器](../tools/skill-install/README.md)装到用户目录 | 文字流程在 Linux 上检查，见[下文](#claude-code-检查)；网页填写、独立审查提交和 macOS 实机未验证 |
-| 其他 CLI、IDE、其他系统 | 可能使用文件与 Skill 能力 | 项目路线未验收；官方内置浏览器不在 CLI/IDE 中提供 |
+| 搜索与官网核验 | 宿主搜索与浏览；可选 Radar collector 联网采集，helper 离线处理已核验记录 | 解析器 fixture 离线检查；真实来源逐项验收 |
+| 网页填写与提交 | 执行规则已抽取，依赖浏览器控制和独立 Agent | 本地模拟已跑通；真实网站逐站验收 |
+| 可选 changedetection 与 macOS 安装器 | 来源变化桥接、失败重试、显式后台安装 | mock API/服务调用与离线配置检查 |
+| Claude Code | 仓库内 `.claude/skills/` 链接到同一份 Skill，`CLAUDE.md` 引入 `AGENTS.md`；可用[安装器](../tools/skill-install/README.md)装到用户目录 | 文字流程在 Linux 上检查，见[下文](#claude-code-检查) |
+| 其他 CLI、IDE、其他系统 | 可能使用文件与 Skill 能力 | 未检查 |
 
-此前私人岗位流程主要用于中国与新加坡。公开工具把地区、实习类型、路径和台账表头改为配置，用新加坡实习和加拿大全职虚构资料测试；这不证明各地网站兼容或用户具备工作许可。中文和英文材料已有流程，语言不能与岗位地区混为一谈。
+此前私人岗位流程主要用于中国与新加坡。公开工具把地区、实习类型、路径和台账表头改为配置，用新加坡实习和加拿大全职虚构资料测试。中文和英文材料都有流程，语言与岗位地区分开配置。
 
 ## 最近一次维护者检查
 
@@ -24,9 +24,7 @@
 - 在 Obsidian 打开 README、切换阅读视图并跳转到贯通练习。实际生成的 `.obsidian/app.json`、`appearance.json`、`core-plugins.json`、`workspace.json` 均被忽略，操作后 `git status --short --untracked-files=all` 无输出。
 - 独立 Agent 仅使用克隆中的公开资料与 Skill，生成了中英文简历和面试回答；职责限定为补充停止条件和测试，没有加入性能提升、Kubernetes 或生产部署经历。
 
-这是已安装软件、已有宿主账号下的维护者与 Agent 检查，未覆盖软件首次安装、全新账号、陌生用户或其他操作系统。仓库检查通过也不代表简历事实正确。
-
-同日，另在提交 `163a7c8` 的干净克隆中检查资料导入：在克隆外创建一份虚构 Markdown，用本地复制命令放入 `private/project-notes.md`，确认原件与副本字节一致；独立 Agent 仅读取项目内副本，正确读出项目内容和核对短语。该文件命中 Git 忽略规则，`git ls-files -- private/` 与 `git status --short --untracked-files=all` 均无输出。此检查证明当前宿主下“复制进项目后读取”的路线可用，没有验证新账号或项目外目录授权。
+同日，另在提交 `163a7c8` 的干净克隆中检查资料导入：在克隆外创建一份虚构 Markdown，用本地复制命令放入 `private/project-notes.md`，确认原件与副本字节一致；独立 Agent 仅读取项目内副本，正确读出项目内容和核对短语。该文件命中 Git 忽略规则，`git ls-files -- private/` 与 `git status --short --untracked-files=all` 均无输出。此检查证明当前宿主下“复制进项目后读取”的路线可用。
 
 ## Claude Code 检查
 
@@ -39,7 +37,7 @@
 
 - `/setup`：在干净克隆里用 `claude -p "/setup <虚构简历>"` 运行，只放行读写文件、初始化脚本和 `git check-ignore`。它建好 17 个模板，把虚构简历拆成 7 张 `unverified` 事实卡（“响应时间降低 40%”“用户超过 2000”标为缺口径、不得进简历），没有推断工作许可和应届资格，最后列出 10 条待确认问题；所有写入都在 `private/`，`git status --short` 无输出。
 
-这是维护者在 Linux 容器里的检查，不是陌生用户验收；macOS 实机、Windows（符号链接需开发者模式或 `core.symlinks`）以及 Claude Code 中的网页填写与独立审查提交都未验证。
+Windows 上符号链接需开发者模式或 `core.symlinks`。
 
 ## 本轮流程迁移检查
 
@@ -47,7 +45,7 @@
 
 同一干净副本还实际执行了：预览并初始化 17 个空模板，重复运行零覆盖，结构检查通过；离线虚构来源采集预览不创建运行目录，正常离线运行生成已见数据库、来源健康、报告和 dossier；只读漏斗与投递审计仍为零真实投递；桥接离线预览不创建状态文件。最后确认分发文件未改动，private 没有进入 Git 索引。独立审阅发现的详情解析依赖、符号链接输出、报告路径冲突和模块缓存写入问题均已修复并加入回归。
 
-以上新增后台检查使用 mock API 与模拟服务调用，没有请求真实招聘网站、安装 changedetection.io 或运行真实 launchctl。第三方服务/命令行兼容性、macOS 后台运行、跨宿主和陌生用户验收仍在[待验证清单](validation-plan.md)。
+以上后台检查使用 mock API 与模拟服务调用。其余验证项见[待验证清单](validation-plan.md)。
 
 ### 此前的流程与浏览器检查
 
@@ -55,37 +53,37 @@
 
 本机 Chrome 连接实际演练：填写虚构字段，通过 `filechooser` / `setFiles` 上传指定 PDF，保存草稿；另一位未参与填写的 Agent 从同一份已保存草稿独立回读，核对字段、附件字节和哈希后提交一次。页面显示 `Application submitted successfully (synthetic)`、`SYNTHETIC-001`、`submit_count: 1`。主 Agent 同步后，历史为 1 条、待投移除、实习及总数为 1；重复事件得到 `changed_files=0`，归档返回 `unchanged`。
 
-此次用了独立审查者自己的浏览器页读取服务器上的同一份已保存草稿，因为宿主会隔离各 Agent 的浏览器会话。这不能证明任意未保存的招聘表单可以跨 Agent 接管；真实网站必须先确认安全交接方式，无法独立审查就保留草稿。
+此次用了独立审查者自己的浏览器页读取服务器上的同一份已保存草稿，因为宿主会隔离各 Agent 的浏览器会话。真实网站先确认安全交接方式，无法独立审查就保留草稿。
 
-以上均为维护者与 Agent 使用虚构资料的检查，不是陌生用户或真实雇主验收。更多宿主、真实网站、安装器和陌生用户验证暂缓，集中记录在[待验证清单](validation-plan.md)。
+更多宿主、真实网站、安装器和陌生用户验证集中记录在[待验证清单](validation-plan.md)。
 
 ## 安装与账号
 
 - 安装支持 Codex 的桌面应用，在 Codex 中登录、打开克隆后的文件夹，并确认可以读取其中的虚构文件及使用 Skill。按[官方上手指南](https://learn.chatgpt.com/docs/quickstart)操作。Obsidian 只提供可选笔记界面，不是 Skill 和脚本的运行依赖。
-- 检查账号当前能选择 Codex、额度是否足够、组织是否允许本地文件和所需工具。网页任务还须确认浏览器控制、独立 Agent 与网站权限；没有独立审查能力时只能保留草稿，不能用自审代替提交。套餐、地区及组织限制以[官方说明](https://learn.chatgpt.com/docs/pricing)和账户显示为准，不要求用户盲买特定套餐。
+- 检查账号当前能选择 Codex、额度是否足够、组织是否允许本地文件和所需工具。网页任务还须确认浏览器控制、独立 Agent 与网站权限；没有独立审查能力时保留草稿。套餐、地区及组织限制以[官方说明](https://learn.chatgpt.com/docs/pricing)和账户显示为准。
 - 运行检查需要 Python 3.10+ 与 Git。可从 [Python 官方下载](https://www.python.org/downloads/)和 [Git 安装说明](https://git-scm.com/downloads)安装；随后执行 `python3 --version`、`git --version`。
-- 如果 `python3` 仍指向旧系统版本，使用新安装的解释器（例如 `python3.11`）替换后续命令里的 `python3`；安装了新版本不等于默认命令已经切换。
-- 核心 Python 工具无需 `pip install`、Node 或 npm。可选后台流程需要用户另行安装并核对 changedetection.io 服务；本包不下载它，见[后台说明](experimental/background-service.md)。文字示例和本地模拟不需要招聘账号；实际浏览器路线可能需要额外浏览器连接或扩展，按当前宿主工具说明配置，不把某一种路线当全部用户的默认能力。
-- 材料归档实现使用 POSIX 文件操作，macOS/Linux 为目标环境，Windows 未验证。提交 `9728cc4` 与 `33dc0f2` 的 GitHub Actions 已在 Ubuntu、Python 3.10/3.11/3.13 跑过当时的工具测试；这不代表 Linux 桌面或浏览器链路验收，也不提前证明后续新增代码的 CI 已通过。
-- 不提供另一个 AI API 后端；使用者使用自己的 Agent 宿主账号。复制 Skill 不会赋予额外模型或浏览器权限。
+- 如果 `python3` 仍指向旧系统版本，使用新安装的解释器（例如 `python3.11`）替换后续命令里的 `python3`。
+- 核心 Python 工具无需 `pip install`、Node 或 npm。可选后台流程需要用户另行安装并核对 changedetection.io 服务；本包不下载它，见[后台说明](experimental/background-service.md)。文字示例和本地模拟不需要招聘账号；实际浏览器路线可能需要额外浏览器连接或扩展，按当前宿主工具说明配置。
+- 材料归档实现使用 POSIX 文件操作，macOS/Linux 为目标环境。GitHub Actions 在 Ubuntu、Python 3.10/3.11/3.13 上运行工具测试。
+- 使用者使用自己的 Agent 宿主账号。
 
-官方入口核对日期：2026-10-01。宿主功能说明不等同于本项目跨宿主验收。
+官方入口核对日期：2026-10-01。
 
 ## 附件路线
 
 | 路线 | 依据 | 本包处理 |
 | --- | --- | --- |
 | 内置浏览器 | [官方说明](https://learn.chatgpt.com/docs/browser)不支持自动上传 | 用户手动上传，Agent 回读检查 |
-| 前台 Chrome 原生文件选择器 | 维护者记录过一次成功 | 仅私人个案，公开前复验，不推断最初浏览器 |
-| 官方 Chrome 扩展 | [官方上传配置](https://learn.chatgpt.com/docs/chrome-extension#upload-files) | 文档说明与历史个案分开，尚未验收 |
-| 本轮桌面 Chrome 连接的 filechooser/setFiles | 当前工具说明与实际本地模拟上传 | 固定虚构 PDF 上传、回读哈希、独立审查提交已跑通；不外推真实网站、原生选择器或所有扩展版本 |
+| 前台 Chrome 原生文件选择器 | 维护者记录过一次成功 | 私人个案，公开前复验 |
+| 官方 Chrome 扩展 | [官方上传配置](https://learn.chatgpt.com/docs/chrome-extension#upload-files) | 待验收 |
+| 本轮桌面 Chrome 连接的 filechooser/setFiles | 当前工具说明与实际本地模拟上传 | 固定虚构 PDF 上传、回读哈希、独立审查提交已跑通 |
 
-注册登录、密码和验证中需要接手的步骤由用户完成。页面说明可用于已授权任务，不能改变授权范围。每位使用者先授权自己的具体岗位，再由独立 Agent 审查实际表单和附件，通过后提交；不继承维护者的个人授权，不额外要求例行人工提交确认。工具确实要求当次确认时仍须遵守。
+注册登录、密码和验证中需要接手的步骤由用户完成。每位使用者先授权自己的具体岗位，再由独立 Agent 审查实际表单和附件，通过后提交；工具要求当次确认时照做。
 
 ## 资料格式
 
-Markdown 和 UTF-8 纯文本可直接作为材料来源，原件保留。事实卡使用现有字段，不创建新的数据协议。可上传用户已经制作并批准的 PDF，也可按哈希归档；这不等于验证了 PDF 文本提取、编辑或排版。DOCX、图片、OCR 和格式导出需要另行选择并验证工具。结构化资料支持 JSON 和采用 JSON 语法的 YAML 文件，不依赖第三方 YAML 库。
+Markdown 和 UTF-8 纯文本可直接作为材料来源，原件保留。事实卡使用现有字段，不创建新的数据协议。可上传用户已经制作并批准的 PDF，也可按哈希归档。结构化资料支持 JSON 和采用 JSON 语法的 YAML 文件，不依赖第三方 YAML 库。
 
-默认上手路线是由用户把需要的文件复制到项目内的 `private/`，确认 Git 忽略规则生效，再让 Codex 读取。项目外目录是否可读取决于宿主和用户授予的权限，未列为通用支持能力；本机曾经读到不能证明其他账号也能读到。
+默认上手路线是由用户把需要的文件复制到项目内的 `private/`，确认 Git 忽略规则生效，再让 Codex 读取。项目外目录是否可读取决于宿主和用户授予的权限。
 
 Obsidian 只需要打开资料库；可选 CSS 手动启用。不分发插件数据、最近文件或工作区状态。默认所有 private 目录都被忽略，无说明文件例外。
