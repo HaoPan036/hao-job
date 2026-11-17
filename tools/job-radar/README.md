@@ -2,7 +2,7 @@
 
 岗位搜索可由宿主 Agent 使用搜索和浏览工具完成，也可先用 `collect.py` 从用户配置的来源采集线索，再由 Agent 核验官方岗位。前台工具只需 Python 3.10+ 标准库，不需要 AI API key、容器或后台服务：
 
-- `collect.py`：显式前台采集、现有来源解析器、详情提取、SQLite 已见状态、来源健康和 Markdown 报告。结果使用同一份 `JobDossier`，核验为 `PENDING`，可行性、能力和战略为 `UNKNOWN`，建议为 `MANUAL_REVIEW`。
+- `collect.py`：显式前台采集、现有来源解析器、详情提取、SQLite 已见状态、来源健康和 Markdown 报告。结果使用同一份 `JobDossier`，核验为 `PENDING`，可行性、能力和战略为 `UNKNOWN`，建议为 `MANUAL_REVIEW`。命令入口仍是 `collect.py`；来源解析、评分、详情提取、本地状态和报告分别在同目录的 `collect_*.py` 中，单独复制采集器时要一起复制。
 - `radar.py`：保留离线 dossier 去重、严格队列门和同步审计；不联网，也不自行判断输入评估是否真实。
 
 完整发现步骤见 [discovery reference](../../.agents/skills/hao-job/references/discovery.md)。候选事实和用户匹配由 Agent 核验；本脚本不能从 `VERIFIED` 字符串判断证据是否真实。
@@ -99,7 +99,7 @@ python3 tools/job-radar/radar.py --profile private/job-search/profile.json --can
 
 URL 中的括号、非 ASCII 字符和空格统一到与 Markdown 写入相同的编码；已编码的路径分隔符和查询分隔符保持区分，有效查询参数的顺序及重复键也保留，避免把不同职位标识合并。
 
-写回前，Git 工作区内的 profile、candidate、queue 和 history 必须同时满足 ignored 和 untracked。离线 `radar.py` 不创建日报、数据库、日志或候选文件，不写已提交状态。保存前的重读可以发现常见并发修改，但不是文件锁或跨文件事务；不要让两个执行者同时写队列。
+写回前，Git 工作区内的 profile、candidate、queue 和 history 必须同时满足 ignored 和 untracked，且路径中不能有符号链接。离线 `radar.py` 不创建日报、数据库、日志或候选文件，不写已提交状态。保存前的重读可以发现常见并发修改，但不是文件锁或跨文件事务；不要让两个执行者同时写队列。
 
 这一步仅负责满足队列门的新增项。Agent 仍需保存 `manual_review`、`excluded`、`duplicate` 指针，更新公司覆盖/当前行动，再核对完整批次。达到 `max_new_per_run` 的其他已评价项不能消失；继续处理或明确报告剩余写回未完成。
 

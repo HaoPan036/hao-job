@@ -80,8 +80,12 @@ class InstallerTests(unittest.TestCase):
     def test_fresh_cli_plan_does_not_create_bytecode_or_runtime_files(self):
         scripts = self.root / "scripts"
         scripts.mkdir()
-        for name in ("install_changedetection.py", "collect.py", "radar.py"):
+        for name in ("install_changedetection.py", "collect.py", "radar.py",
+                     *sorted(p.name for p in installer.TOOL_DIR.glob("collect_*.py"))):
             shutil.copyfile(installer.TOOL_DIR / name, scripts / name)
+        # The scripts import the shared package from the directory above them.
+        shutil.copytree(installer.TOOL_DIR.parent / "haojob_common", self.root / "haojob_common",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         self.config["components"] = ["server"]
         self.save()
         before = self.snapshot()

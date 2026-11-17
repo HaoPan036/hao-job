@@ -20,6 +20,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 import collect
+from haojob_common import paths as common_paths
 import radar
 
 
@@ -155,14 +156,15 @@ def launchctl(*arguments: str) -> str:
 
 
 def require_ignored_path(path: Path) -> None:
-    collect.require_runtime_path(path)
-    ancestor = path.parent
-    while not ancestor.exists() and ancestor != ancestor.parent:
-        ancestor = ancestor.parent
-    result = subprocess.run(["git", "-C", str(ancestor), "rev-parse", "--show-toplevel"],
-                            capture_output=True, text=True, check=False, shell=False)
-    if result.returncode:
-        raise ValueError("installer runtime and inputs must be inside Git, ignored and untracked")
+    collect.reject_symlinks(path)
+    try:
+        common_paths.require_private_path(path, allow_outside_git=False)
+    except common_paths.PathPolicyError as error:
+        if error.reason == "outside_git":
+            raise ValueError("installer runtime and inputs must be inside Git, ignored and untracked") from None
+        if error.reason == "not_private":
+            raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {error.path}") from None
+        raise ValueError(f"symbolic links are not allowed in collector paths: {error.path}") from None
 
 
 def preflight(plan: dict) -> None:

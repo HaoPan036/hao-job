@@ -26,6 +26,8 @@ description: "Find and evaluate jobs, prepare evidence-backed resumes, cover let
 
 完整仓库首次建立本地资料时可运行 `python3 tools/workspace/setup.py init`，只补齐缺失模板；随后 `check` 检查结构。先读该工具说明，不把空档案检查通过当作事实核实或投递授权。只安装 Skill 时沿用用户现有资料，不假定仓库工具存在。
 
+在仓库以外的目录使用时，先解析本 Skill 目录的真实路径（跟随安装器建立的符号链接，例如 `realpath`），向上三级是包根目录。那里有 `tools/` 时，用绝对路径运行工具，并显式指向用户工作区：`workspace/setup.py`、`recruiting-sync/sync.py`、`application-record/record.py` 省略 `--root` 时会作用于包根目录本身，必须传 `--root <用户工作区的 Git 根目录>`；`job-radar/funnel.py` 的 `--root` 本就必填。`job-radar/radar.py`、`job-radar/collect.py` 和 `application-profile/read.py` 没有 `--root`，用 `--profile` 传用户文件的绝对路径；前两者的配置路径按 profile 所在目录解析。那里没有 `tools/` 时属于只安装 Skill，这些工具不可用。
+
 ## 独立使用时也必须保留的边界
 
 - 审阅、解释和核验默认只读；“只评价、不保存”不得写文件。用户要求创建、修改或保存材料时，在指定位置完成该产物；不因此改动事实源、练习成绩或其他材料。事实源更正须在用户要求的更正范围内，并有相应依据。

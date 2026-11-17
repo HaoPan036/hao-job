@@ -9,14 +9,19 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict, dataclass, fields
-import html
 import json
 from pathlib import Path
 import re
-import subprocess
 import sys
 import unicodedata
 import urllib.parse
+
+sys.dont_write_bytecode = True
+TOOLS_DIR = Path(__file__).resolve().parents[1]
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+from haojob_common import PathPolicyError, canonical_url, clean_text, contains_job_id, require_private_path
+from haojob_common.urls import normalize_url_component as _normalize_url_component
 
 
 AUTO_QUEUE_START = "<!-- job-radar:auto:start -->"
@@ -123,41 +128,13 @@ class RecruitingSyncValidation:
         return self.orphan_count == 0 and not self.errors
 
 
-def clean_text(value: str) -> str:
-    return re.sub(r"\s+", " ", html.unescape(value)).strip()
-
-
 def normalize_for_match(value: str) -> str:
     return unicodedata.normalize("NFKC", clean_text(value)).casefold()
 
 
-def normalize_url_component(value: str, safe: str) -> str:
-    # Only unreserved escapes are interchangeable with literal URI characters.
-    # Keep encoded delimiters such as %2F and %3F encoded: they may be job IDs.
-    unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-
-    def normalize_escape(match: re.Match) -> str:
-        character = chr(int(match.group(0)[1:], 16))
-        return character if character in unreserved else match.group(0).upper()
-
-    value = re.sub(r"%[0-9A-Fa-f]{2}", normalize_escape, value)
-    return urllib.parse.quote(value, safe=safe + "%")
-
-
-def normalize_url(url: str) -> str:
-    parsed = urllib.parse.urlsplit(url)
-    # Preserve meaningful query order, repeated keys and encoded delimiters.
-    # Do not round-trip through parse_qsl, which treats '+' as a space.
-    filtered = []
-    for part in parsed.query.split("&"):
-        key = urllib.parse.unquote(part.partition("=")[0]).lower()
-        if key.startswith("utm_") or key in {"spm", "from", "source"}:
-            continue
-        filtered.append(normalize_url_component(part, "/?:@!$'*+,;=-._~"))
-    return urllib.parse.urlunsplit((
-        parsed.scheme.lower(), parsed.netloc.lower(),
-        normalize_url_component(parsed.path.rstrip("/"), "/:@!$&'*+,;=-._~"),
-        "&".join(filtered), normalize_url_component(parsed.fragment, "/?:@!$&'*+,;=-._~")))
+# One identity form shared with recruiting-sync; outputs are stored as keys.
+normalize_url_component = _normalize_url_component
+normalize_url = canonical_url
 
 
 def markdown_urls(text: str) -> list[str]:
@@ -338,20 +315,13 @@ def read_exact(path: Path) -> str:
 
 def require_local_runtime_path(path: Path) -> None:
     """Inside a Git workspace, runtime material must be ignored and untracked."""
-    path = path.resolve()
-    root = subprocess.run(["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
-                          capture_output=True, text=True, check=False)
-    if root.returncode:
+    try:
         # A caller-selected directory outside Git is also a supported workspace.
-        return
-    repository = Path(root.stdout.strip())
-    relative = str(path.relative_to(repository))
-    tracked = subprocess.run(["git", "-C", str(repository), "ls-files", "--error-unmatch", "--", relative],
-                             capture_output=True, check=False)
-    ignored = subprocess.run(["git", "-C", str(repository), "check-ignore", "-q", "--", relative],
-                             capture_output=True, check=False)
-    if tracked.returncode == 0 or ignored.returncode != 0:
-        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {path}")
+        require_private_path(path, allow_outside_git=True)
+    except PathPolicyError as error:
+        if error.reason == "symlink":
+            raise ValueError(f"symbolic links are not allowed in runtime paths: {error.path}") from None
+        raise ValueError(f"runtime material must be ignored and untracked, or outside Git: {error.path}") from None
 
 
 def preflight_application_queue(path: Path, history_path: Path) -> tuple[str, str, int, int]:
@@ -432,8 +402,7 @@ def update_application_queue(path: Path, history_path: Path, rows: list[JobDossi
     return len(additions)
 
 
-def contains_stable_job_id(text: str, job_id: str) -> bool:
-    return re.search(rf"(?<![A-Za-z0-9_-]){re.escape(job_id)}(?![A-Za-z0-9_-])", text) is not None
+contains_stable_job_id = contains_job_id
 
 
 def queue_disposition_annotations(queue_text: str, batch_date: str) -> tuple[dict[str, int], ...]:
