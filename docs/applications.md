@@ -6,7 +6,7 @@
 
 只提供本次申请需要的资料和确认过的简历。简历可以是已制作好的 PDF；归档工具保存原字节，不负责编辑、提取或检查 PDF 排版。真实资料放入已确认被 Git 忽略、未跟踪的 `private/`，保留原件。
 
-经常填写相同信息时，可以从[资料模板](../templates/application-profile/README.md)复制一份结构化档案，逐项填自己的信息。可以先用[虚构档案](../examples/application/profile/README.md)试读取。模板中没有维护者的个人授权、账号规则或公司例外；执行模式 `review_then_submit` 只说明授权后怎样处理，不能替代具体岗位授权。
+经常填写相同信息时，可以从[资料模板](../templates/application-profile/README.md)复制一份结构化档案，逐项填自己的信息。可以先用[虚构档案](../examples/application/profile/README.md)试读取。执行模式 `review_then_submit` 说明授权后怎样处理。
 
 从仓库根目录初始化资料与空白记录（已有文件不覆盖）：
 
@@ -17,7 +17,7 @@ python3 tools/workspace/setup.py check
 python3 tools/recruiting-sync/sync.py audit --json
 ```
 
-首次使用前按[同步工具说明](../tools/recruiting-sync/README.md)修改配置中的地区和表头。上面复制的是空记录与虚构地区配置，不是你的历史。不要把模板中的成功事件放进真实台账。
+首次使用前按[同步工具说明](../tools/recruiting-sync/README.md)修改配置中的地区和表头。上面复制的是空记录与虚构地区配置。
 
 ## 让 AI 执行
 
@@ -34,4 +34,4 @@ python3 tools/recruiting-sync/sync.py audit --json
 - 网站成功而本地写入失败时，只修复记录。归档失败单独报告，不再提交。
 - 面试前可以说：“找出这个岗位当时投的简历，按那份版本准备项目介绍。”Agent 根据申请记录中的材料 ID 和哈希找到原件，不把后来修改的简历当成历史版本。
 
-代码能检查哈希、字段、重复和统计是否一致，不能证明输入的经历或成功证据真实。事实核对、授权与独立审查仍是 Agent 必须遵守的工作规则。
+代码检查哈希、字段、重复和统计是否一致；事实核对、授权与独立审查由 Agent 按工作规则完成。

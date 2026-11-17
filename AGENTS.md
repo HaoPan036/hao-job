@@ -11,3 +11,16 @@ This package provides a local career workspace. Use [hao-job](.agents/skills/hao
 - Do not infer application authority from job discovery or materials work. For an explicitly authorized exact job, follow the Skill's independent review and one-submit workflow; honor an explicit fill-only request. The reviewer owns the form during review and submission. Preserve actual tool-level restrictions; do not add routine confirmation when the existing authorization covers the action.
 - An authorized click is not submission proof. On an uncertain outcome do not retry or count success. After proven website success, repair failed local records without submitting again. Keep runtime profiles, records, plans and archives ignored and untracked.
 - For package changes, run the package's own checks in a standalone copy: `python3 tools/repo-check/check.py` and `python3 -m unittest discover -s tools/repo-check/tests -v`. Review the exact files selected for Git. Do not publish or push personal files.
+
+## Wording
+
+These rules apply to documentation, comments, commit messages and replies.
+
+- Test each sentence: would a reader who skipped it do the wrong thing or decide wrongly? If so, write it once; if not, delete it. Do not write sentences to guard against being accused of overstating.
+- State scope and status positively. Write "supports Markdown and plain text", not "PDF is not yet validated"; write "unverified", not "unverified; the local mock does not replace real websites".
+- Do not write negative disclaimers. Avoid "does not mean", "is not evidence of", "不代表", "不等于", "不能证明", "不把……当作" for saying what something is not, unless a literal reading would lead the reader to that wrong conclusion and to an action with consequences.
+- State a limitation once in the whole repository, where the reader performs the related action. Elsewhere link to it; do not restate it.
+- Do not rebut objections nobody raised or state the obvious, such as "this is not a standalone program" or "these projects are not runtime dependencies".
+- Operating rules are not disclaimers and stay: authorization scope, one submit, no retry on an uncertain outcome, where data is sent, and warnings before irreversible actions. Write them as instructions or plain facts.
+- When reporting work, give verified results directly and say once what was not run. Do not repeat "not yet reviewed" at the start or end of each section.
+- Before finishing, search the text for "不代表", "不等于", "不能证明", "不替代", "does not", "not evidence" and apply the first rule to each hit.
