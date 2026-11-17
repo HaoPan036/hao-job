@@ -56,7 +56,8 @@ class SetupTests(unittest.TestCase):
     def test_fresh_cli_dry_run_does_not_create_import_caches(self):
         for relative in ("tools/workspace/setup.py", "tools/recruiting-sync/sync.py",
                          "tools/application-profile/read.py", "tools/job-radar/radar.py",
-                         "tools/job-radar/collect.py"):
+                         "tools/job-radar/collect.py",
+                         *sorted("tools/job-radar/" + p.name for p in (setup.PACKAGE / "tools/job-radar").glob("collect_*.py"))):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(setup.PACKAGE / relative, destination)

@@ -91,7 +91,8 @@ class BridgeTests(unittest.TestCase):
     def test_preview_cli_does_not_create_import_caches(self):
         tools = self.root / "tools-copy"
         tools.mkdir()
-        for name in ("changedetection_bridge.py", "collect.py", "radar.py"):
+        for name in ("changedetection_bridge.py", "collect.py", "radar.py",
+                     *sorted(p.name for p in bridge.TOOL_DIR.glob("collect_*.py"))):
             shutil.copyfile(bridge.TOOL_DIR / name, tools / name)
         # The scripts import the shared package from the directory above them.
         shutil.copytree(bridge.TOOL_DIR.parent / "haojob_common", self.root / "haojob_common",
